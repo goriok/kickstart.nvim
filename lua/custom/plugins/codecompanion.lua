@@ -15,6 +15,10 @@ return {
             schema = {
               model = {
                 default = 'gemini-3-flash-preview',
+                choices = {
+                  ['gemini-3-flash-preview'] = { opts = { can_reason = true, has_vision = true } },
+                  ['gemini-3-pro-preview'] = { opts = { can_reason = true, has_vision = true } },
+                },
               },
             },
           })
@@ -44,7 +48,6 @@ return {
       display = {
         chat = {
           show_token_count = true,
-          render_headers = true,
         },
       },
     }
