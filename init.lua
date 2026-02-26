@@ -603,6 +603,9 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
+        marksman = {},
+        ['yaml-language-server'] = {},
+        -- jsonls = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -618,6 +621,15 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
         'pyright',
         'ruff',
+        'gopls',
+        'goimports',
+        'gofumpt',
+        'marksman',
+        'yaml-language-server',
+        -- 'jsonls',
+        'prettierd',
+        'markdownlint',
+        -- 'jsonlint',
         -- You can add other tools here that you want Mason to install
       })
 
@@ -690,6 +702,9 @@ require('lazy').setup({
         lua = { 'stylua' },
         go = { 'goimports', 'gofmt' },
         python = { 'ruff_format', 'ruff_organize_imports' },
+        markdown = { 'prettierd', 'prettier', stop_after_first = true },
+        yaml = { 'prettierd', 'prettier', stop_after_first = true },
+        json = { 'prettierd', 'prettier', stop_after_first = true },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         -- You can use 'stop_after_first' to run the first available formatter from the list
@@ -777,7 +792,7 @@ require('lazy').setup({
             name = 'CodeCompanion',
             module = 'codecompanion.providers.completion.blink',
             enabled = true,
-            score = '',
+            score = 100,
           },
         },
       },
@@ -863,7 +878,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     config = function()
       local filetypes =
-        { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'go', 'json', 'jsonc' }
+        { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'go', 'json', 'jsonc', 'yaml' }
       require('nvim-treesitter').install(filetypes)
       vim.api.nvim_create_autocmd('FileType', {
         pattern = filetypes,
