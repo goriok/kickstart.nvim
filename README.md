@@ -15,11 +15,21 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 
 ### AI Integration
 - **Plugin**: [codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim)
-- **Adapter**: Google Gemini
+- **Default Adapter**: GitHub Copilot
+- **Available Adapters**: GitHub Copilot, Google Gemini
+- **Extensions**: Chat history (`codecompanion-history.nvim`) — open with `gh`, save with `gW` inside chat buffer.
 - **Keymaps**:
   - `<leader>ac`: Toggle AI Chat
   - `<leader>ai`: AI Inline Edit (Visual mode)
   - `<leader>aa`: AI Actions
+
+### Inline AI Suggestions
+- **Plugin**: [copilot.lua](https://github.com/zbirenbaum/copilot.lua)
+- **Description**: Inline code suggestions powered by GitHub Copilot, auto-triggered on insert mode.
+- **Keymaps**:
+  - `<C-l>`: Accept suggestion
+  - `<M-]>` / `<M-[>`: Next / Previous suggestion
+  - `<C-]>`: Dismiss suggestion
 
 ### File Management
 - **Plugin**: [oil.nvim](https://github.com/stevearc/oil.nvim)
@@ -36,8 +46,12 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
   - `<leader>ww`: Toggle maximize current window
 
 ### Markdown
-- **Plugin**: [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)
-- Improves Markdown viewing experience directly in Neovim.
+- **Plugins**:
+  - [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) — Rich rendering inside Neovim (also renders CodeCompanion chat buffers).
+  - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) — Live preview in browser with Mermaid diagram support.
+- **Keymaps**:
+  - `<leader>mr`: Toggle Markdown render (in-editor)
+  - `<leader>mp`: Toggle Markdown preview (browser)
 
 ## Core Keymaps
 
@@ -52,13 +66,19 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 | `<leader>sg` | Live Grep |
 | `<leader>f` | Format buffer |
 | `<leader>q` | Open diagnostic Quickfix list |
+| `<C-l>` | Accept Copilot suggestion (Insert mode) |
+| `<leader>mr` | Toggle Markdown render (in-editor) |
+| `<leader>mp` | Toggle Markdown preview (browser) |
 
 ## Language Support
 
 Out of the box support (LSP, Formatting, Highlighting) for:
 - **Lua**: `lua_ls`, `stylua`
 - **Python**: `pyright`, `ruff`
-- **Go**: `gopls`, `goimports`, `gofumpt`
+- **Go**: `gopls` (with built-in staticcheck), `goimports`, `gofumpt`
+- **Ruby**: `ruby-lsp`, `rubocop`
+- **JavaScript/TypeScript**: `ts_ls`, `eslint-lsp`, `prettierd`
+- **CSS/HTML**: `prettierd`
 - **Markdown**: `marksman`, `prettierd`, `markdownlint`
 - **YAML/JSON**: `yaml-language-server`, `prettierd`
 
@@ -70,6 +90,8 @@ Out of the box support (LSP, Formatting, Highlighting) for:
 - Make, GCC (for Telescope fzf-native)
 - Ripgrep, fd (for Telescope)
 - Nerd Font (recommended)
+- Node.js >= 18 (for JS/TS LSP and formatters — recommended via [nvm](https://github.com/nvm-sh/nvm))
+- Ruby >= 3.0 (for Ruby LSP — recommended via [rbenv](https://github.com/rbenv/rbenv))
 
 ### Setup
 
@@ -93,6 +115,6 @@ Out of the box support (LSP, Formatting, Highlighting) for:
 ## Structure
 
 - `init.lua`: Main configuration file.
-- `lua/custom/plugins/`: User-added plugins (CodeCompanion, Oil, Maximizer, etc.).
+- `lua/custom/plugins/`: User-added plugins (CodeCompanion, Copilot, Markdown, Oil, Maximizer, etc.).
 - `lua/kickstart/plugins/`: Core Kickstart plugins (Debug, Lint, Gitsigns, etc.).
 

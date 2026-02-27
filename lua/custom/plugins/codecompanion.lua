@@ -3,10 +3,13 @@ return {
   dependencies = {
     'nvim-lua/plenary.nvim',
     'nvim-treesitter/nvim-treesitter',
+    'zbirenbaum/copilot.lua', -- Ensure copilot is loaded
+    'ravitemer/codecompanion-history.nvim', -- Chat history extension
   },
   config = function()
     require('codecompanion').setup {
       adapters = {
+        copilot = function() return require('codecompanion.adapters').extend('copilot', {}) end,
         gemini = function()
           return require('codecompanion.adapters').extend('gemini', {
             env = {
@@ -26,13 +29,13 @@ return {
       },
       strategies = {
         chat = {
-          adapter = 'gemini',
+          adapter = 'copilot',
         },
         inline = {
-          adapter = 'gemini',
+          adapter = 'copilot',
         },
         agent = {
-          adapter = 'gemini',
+          adapter = 'copilot',
           tools = {
             ['editor'] = {
               callback = 'helpers.tools.editor',
@@ -48,6 +51,22 @@ return {
       display = {
         chat = {
           show_token_count = true,
+        },
+      },
+      extensions = {
+        history = {
+          enabled = true,
+          opts = {
+            -- Keymap to open history from chat buffer
+            keymap = 'gh',
+            -- Keymap to save the current chat manually
+            -- NOTE: avoid 'gsc' because 'gs' (toggle system prompt) fires before 'c'
+            save_chat_keymap = 'gW',
+            -- Save directory
+            dir_to_save = vim.fn.stdpath 'data' .. '/codecompanion-history',
+            -- Picker: 'telescope' | 'snacks' | 'fzf_lua' | 'mini_pick' | 'default'
+            picker = 'default',
+          },
         },
       },
     }

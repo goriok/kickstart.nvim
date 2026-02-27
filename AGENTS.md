@@ -8,8 +8,10 @@ The current project is a Neovim configuration based on [kickstart.nvim](https://
 
 - `init.lua`: The main entry point for the configuration. It sets up the leader key, options, and loads plugins.
 - `lua/custom/plugins/`: A directory for user-defined plugins.
-  - `codecompanion.lua`: Configuration for the `olimorris/codecompanion.nvim` plugin, which provides AI integration.
+  - `codecompanion.lua`: Configuration for the `olimorris/codecompanion.nvim` plugin, which provides AI integration (adapters, strategies, history extension).
+  - `copilot.lua`: Configuration for `zbirenbaum/copilot.lua`, providing inline AI suggestions.
   - `init.lua`: A placeholder for adding more custom plugins.
+  - `markdown.lua`: Configuration for `render-markdown.nvim` (in-editor rendering) and `markdown-preview.nvim` (browser preview with Mermaid support).
   - `maximizer.lua`: Configuration for `szw/vim-maximizer`.
   - `oil.lua`: Configuration for `stevearc/oil.nvim`.
 - `lua/kickstart/`: Core Kickstart configuration files.
@@ -35,11 +37,35 @@ The current project is a Neovim configuration based on [kickstart.nvim](https://
 
 The environment includes several tools accessible via Neovim plugins:
 
-- `codecompanion.nvim`: AI-powered coding assistant.
+- `codecompanion.nvim`: AI-powered coding assistant (default adapter: Copilot, also available: Gemini). Includes chat history extension (`codecompanion-history.nvim`).
+- `copilot.lua`: Inline AI code suggestions (auto-triggered on `InsertEnter`).
 - `nvim-dap`: Debugging support.
 - `gitsigns.nvim`: Git integration.
-- `nvim-lint`: Linting.
+- `nvim-lint`: Linting (markdownlint, yamllint, jsonlint, rubocop, eslint).
 - `neo-tree.nvim`: File exploration.
+- `render-markdown.nvim`: Rich Markdown rendering inside Neovim (also used for CodeCompanion chat buffers).
+- `markdown-preview.nvim`: Live Markdown preview in browser with Mermaid diagram support.
+
+## Language Support
+
+LSP, formatting, linting and Treesitter highlighting configured for:
+
+| Language   | LSP                    | Formatter              | Linter                         |
+| ---------- | ---------------------- | ---------------------- | ------------------------------ |
+| Lua        | `lua-language-server`  | `stylua`               | —                              |
+| Python     | `pyright`              | `ruff`                 | —                              |
+| Go         | `gopls`                | `goimports`, `gofumpt` | `gopls` (built-in staticcheck) |
+| Ruby       | `ruby-lsp`             | `rubocop`              | `rubocop`                      |
+| JavaScript | `ts_ls`                | `prettierd`            | `eslint`                       |
+| TypeScript | `ts_ls`                | `prettierd`            | `eslint`                       |
+| JSX/TSX    | `ts_ls`                | `prettierd`            | `eslint`                       |
+| Markdown   | `marksman`             | `prettierd`            | `markdownlint`                 |
+| YAML       | `yaml-language-server` | `prettierd`            | `yamllint`                     |
+| JSON       | —                      | `prettierd`            | `jsonlint`                     |
+| CSS/HTML   | —                      | `prettierd`            | —                              |
+
+Treesitter parsers are also installed for `bash`, `c`, `diff`, `mermaid`, `jsdoc`, `luadoc`, `query`, `vim`, `vimdoc`, and all languages listed above.
+Filetype-to-parser mapping handles `typescriptreact` → `tsx` and `javascriptreact` → `javascript` automatically.
 
 ## Workflow
 

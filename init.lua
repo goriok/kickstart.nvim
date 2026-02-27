@@ -594,15 +594,34 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       local servers = {
         -- clangd = {},
-        gopls = {},
+        gopls = {
+          settings = {
+            gopls = {
+              analyses = {
+                unusedparams = true,
+                shadow = true,
+              },
+              staticcheck = true, -- enables staticcheck analyses inside gopls
+              gofumpt = true, -- use gofumpt formatting rules
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
+              },
+            },
+          },
+        },
         pyright = {},
         -- rust_analyzer = {},
+        ruby_lsp = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
+        ts_ls = {},
         marksman = {},
         ['yaml-language-server'] = {},
         -- jsonls = {},
@@ -615,7 +634,16 @@ require('lazy').setup({
       --    :Mason
       --
       -- You can press `g?` for help in this menu.
-      local ensure_installed = vim.tbl_keys(servers or {})
+      -- lspconfig server names that differ from their Mason package names
+      local lspconfig_to_mason = {
+        ruby_lsp = 'ruby-lsp',
+        ts_ls = 'typescript-language-server',
+      }
+
+      local ensure_installed = {}
+      for name, _ in pairs(servers or {}) do
+        table.insert(ensure_installed, lspconfig_to_mason[name] or name)
+      end
       vim.list_extend(ensure_installed, {
         'lua-language-server', -- Lua Language server
         'stylua', -- Used to format Lua code
@@ -630,6 +658,11 @@ require('lazy').setup({
         'prettierd',
         'markdownlint',
         -- 'jsonlint',
+        'rubocop', -- Ruby linter/formatter
+        'ruby-lsp', -- Ruby language server
+        'typescript-language-server', -- JS/TS language server
+        'eslint-lsp', -- ESLint language server
+        'prettierd', -- JS/TS/CSS/HTML formatter (already listed above, Mason deduplicates)
         -- You can add other tools here that you want Mason to install
       })
 
@@ -700,15 +733,20 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        go = { 'goimports', 'gofmt' },
+        go = { 'goimports', 'gofumpt' },
         python = { 'ruff_format', 'ruff_organize_imports' },
         markdown = { 'prettierd', 'prettier', stop_after_first = true },
         yaml = { 'prettierd', 'prettier', stop_after_first = true },
         json = { 'prettierd', 'prettier', stop_after_first = true },
+        ruby = { 'rubocop' },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        css = { 'prettierd', 'prettier', stop_after_first = true },
+        html = { 'prettierd', 'prettier', stop_after_first = true },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
     },
   },
@@ -877,12 +915,50 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     config = function()
-      local filetypes =
-        { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'go', 'json', 'jsonc', 'yaml' }
+      local filetypes = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'mermaid',
+        'query',
+        'vim',
+        'vimdoc',
+        'python',
+        'go',
+        'json',
+        'jsonc',
+        'yaml',
+        'ruby',
+        'javascript',
+        'typescript',
+        'tsx',
+        'jsdoc',
+      }
       require('nvim-treesitter').install(filetypes)
+      -- nvim-treesitter uses parser names (e.g. 'tsx'), but FileType events use
+      -- Neovim's filetype names (e.g. 'typescriptreact'). Map them explicitly.
+      local ft_to_parser = {
+        typescriptreact = 'tsx',
+        javascriptreact = 'javascript',
+      }
       vim.api.nvim_create_autocmd('FileType', {
         pattern = filetypes,
-        callback = function() vim.treesitter.start() end,
+        callback = function(ev)
+          local parser = ft_to_parser[ev.match] or ev.match
+          pcall(vim.treesitter.start, ev.buf, parser)
+        end,
+      })
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = vim.tbl_keys(ft_to_parser),
+        callback = function(ev)
+          local parser = ft_to_parser[ev.match]
+          pcall(vim.treesitter.start, ev.buf, parser)
+        end,
       })
     end,
   },
