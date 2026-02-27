@@ -48,6 +48,46 @@ return {
           },
         },
       },
+      prompt_library = {
+        ['Browse Chat History'] = {
+          strategy = 'chat',
+          description = 'Browse and restore saved chat history',
+          opts = {
+            index = 4,
+            is_default = false,
+            is_slash_cmd = false,
+            short_name = 'history',
+            modes = { 'n', 'v' },
+          },
+          prompts = {
+            n = function()
+              vim.cmd 'CodeCompanionHistory'
+            end,
+            v = function()
+              vim.cmd 'CodeCompanionHistory'
+            end,
+          },
+        },
+        ['Browse Summaries'] = {
+          strategy = 'chat',
+          description = 'Browse saved chat summaries',
+          opts = {
+            index = 5,
+            is_default = false,
+            is_slash_cmd = false,
+            short_name = 'summaries',
+            modes = { 'n', 'v' },
+          },
+          prompts = {
+            n = function()
+              vim.cmd 'CodeCompanionSummaries'
+            end,
+            v = function()
+              vim.cmd 'CodeCompanionSummaries'
+            end,
+          },
+        },
+      },
       display = {
         chat = {
           show_token_count = true,
@@ -66,6 +106,13 @@ return {
             dir_to_save = vim.fn.stdpath 'data' .. '/codecompanion-history',
             -- Picker: 'telescope' | 'snacks' | 'fzf_lua' | 'mini_pick' | 'default'
             picker = 'default',
+            summary = {
+              -- NOTE: avoid 'gcs'/'gbs' — 'gc' and 'gb' are prefixes of existing keymaps
+              -- ('gc' = codeblock, 'gba'/'gbd' = buffer sync), causing input delay.
+              -- 'gz' is unused by codecompanion, making it a safe prefix.
+              create_summary_keymap = 'gzs',
+              browse_summaries_keymap = 'gzb',
+            },
           },
         },
       },

@@ -37,7 +37,7 @@ The current project is a Neovim configuration based on [kickstart.nvim](https://
 
 The environment includes several tools accessible via Neovim plugins:
 
-- `codecompanion.nvim`: AI-powered coding assistant (default adapter: Copilot, also available: Gemini). Includes chat history extension (`codecompanion-history.nvim`).
+- `codecompanion.nvim`: AI-powered coding assistant (default adapter: Copilot, also available: Gemini). Includes chat history extension (`codecompanion-history.nvim`) with prompt library entries for browsing history and summaries. A spinner is shown in the statusline while requests are in flight (via `vim.uv` timer + `CodeCompanionRequestStarted/Finished` autocmds).
 - `copilot.lua`: Inline AI code suggestions (auto-triggered on `InsertEnter`).
 - `nvim-dap`: Debugging support.
 - `gitsigns.nvim`: Git integration.

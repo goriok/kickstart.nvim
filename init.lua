@@ -484,7 +484,17 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
+      {
+        'j-hui/fidget.nvim',
+        opts = {
+          notification = {
+            override_vim_notify = true,
+            window = {
+              winblend = 0,
+            },
+          },
+        },
+      },
 
       -- Allows extra capabilities provided by blink.cmp
       'saghen/blink.cmp',
@@ -906,6 +916,60 @@ require('lazy').setup({
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function() return '%2l:%-2v' end
+
+      -- CodeCompanion spinner in the statusline
+      local spinner_frames = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' }
+      local spinner_idx = 1
+      local spinner_timer = nil
+      local cc_active_requests = 0
+
+      local function start_spinner()
+        if spinner_timer then return end
+        spinner_idx = 1
+        spinner_timer = vim.uv.new_timer()
+        spinner_timer:start(
+          0,
+          80,
+          vim.schedule_wrap(function()
+            spinner_idx = (spinner_idx % #spinner_frames) + 1
+            vim.cmd.redrawstatus()
+          end)
+        )
+      end
+
+      local function stop_spinner()
+        if spinner_timer then
+          spinner_timer:stop()
+          spinner_timer:close()
+          spinner_timer = nil
+        end
+      end
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'CodeCompanionRequestStarted',
+        callback = function()
+          cc_active_requests = cc_active_requests + 1
+          start_spinner()
+          vim.notify('CodeCompanion thinking…', vim.log.levels.INFO, { title = 'CodeCompanion' })
+        end,
+      })
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'CodeCompanionRequestFinished',
+        callback = function()
+          cc_active_requests = math.max(cc_active_requests - 1, 0)
+          if cc_active_requests == 0 then
+            stop_spinner()
+            vim.notify('CodeCompanion done ✓', vim.log.levels.INFO, { title = 'CodeCompanion' })
+          end
+        end,
+      })
+
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_location = function()
+        if spinner_timer then return spinner_frames[spinner_idx] .. ' ' .. '%2l:%-2v' end
+        return '%2l:%-2v'
+      end
 
       -- ... and there is more!
       --  Check out: https://github.com/nvim-mini/mini.nvim

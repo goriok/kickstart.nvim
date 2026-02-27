@@ -18,10 +18,14 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 - **Default Adapter**: GitHub Copilot
 - **Available Adapters**: GitHub Copilot, Google Gemini
 - **Extensions**: Chat history (`codecompanion-history.nvim`) — open with `gh`, save with `gW` inside chat buffer.
+- **Prompt Library**: `Browse Chat History` (`history`) and `Browse Summaries` (`summaries`) entries available via `<leader>aa`.
+- **Statusline Spinner**: A braille spinner animates in the statusline while a request is in flight; `fidget.nvim` shows toast notifications on start/done.
 - **Keymaps**:
   - `<leader>ac`: Toggle AI Chat
   - `<leader>ai`: AI Inline Edit (Visual mode)
   - `<leader>aa`: AI Actions
+  - `gzs` *(chat buffer)*: Create chat summary
+  - `gzb` *(chat buffer)*: Browse saved summaries
 
 ### Inline AI Suggestions
 - **Plugin**: [copilot.lua](https://github.com/zbirenbaum/copilot.lua)
