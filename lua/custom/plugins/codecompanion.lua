@@ -7,6 +7,23 @@ return {
     'ravitemer/codecompanion-history.nvim', -- Chat history extension
   },
   config = function()
+    --- Read a system prompt from ~/.local/share/nvim/prompts/<name>.md
+    --- Keeps prompts outside the repo (private, not pushed to GitHub)
+    ---@param name string filename without extension
+    ---@param fallback string fallback if file not found
+    ---@return string
+    local function load_prompt(name, fallback)
+      local path = vim.fn.stdpath 'data' .. '/prompts/' .. name .. '.md'
+      local f = io.open(path, 'r')
+      if not f then
+        vim.notify('Prompt not found: ' .. path, vim.log.levels.WARN)
+        return fallback
+      end
+      local content = f:read '*a'
+      f:close()
+      return content
+    end
+
     require('codecompanion').setup {
       adapters = {
         copilot = function() return require('codecompanion.adapters').extend('copilot', {}) end,
@@ -30,6 +47,19 @@ return {
       strategies = {
         chat = {
           adapter = 'copilot',
+          roles = {
+            ---Show the adapter name + model in the chat header
+            ---e.g. "Copilot (gpt-4o)" or "Gemini (gemini-3-flash-preview)"
+            ---@param adapter CodeCompanion.Adapter
+            ---@return string
+            llm = function(adapter)
+              local model = adapter.model and adapter.model.name or nil
+              if model then
+                return adapter.formatted_name .. ' (' .. model .. ')'
+              end
+              return adapter.formatted_name
+            end,
+          },
         },
         inline = {
           adapter = 'copilot',
@@ -87,6 +117,129 @@ return {
             end,
           },
         },
+        -- Sofi: Mentora de Práxis Filosófica
+        -- System prompt lives outside the repo at: ~/.local/share/nvim/prompts/sofi.md
+        -- Uses Gemini adapter (switch models with `ga` in chat)
+        ['Sofi'] = {
+          strategy = 'chat',
+          description = 'Mentora de Práxis Filosófica e Historiadora das Ideias',
+          opts = {
+            index = 6,
+            is_default = false,
+            is_slash_cmd = false,
+            short_name = 'sofi',
+            modes = { 'n', 'v' },
+            ignore_system_prompt = true,
+
+          },
+          prompts = {
+            {
+              role = 'system',
+              content = function()
+                return load_prompt('sofi', 'Você é Sofi, mentora de práxis filosófica.')
+              end,
+            },
+            {
+              role = 'user',
+              content = '',
+            },
+          },
+        },
+        -- Identity Study: OAuth2, OIDC, Federation tutor
+        -- System prompt at: ~/.local/share/nvim/prompts/identity-study.md
+        ['Identity Study'] = {
+          strategy = 'chat',
+          description = 'IAM Study Companion — OAuth2, OIDC, Federation',
+          opts = {
+            index = 7,
+            is_default = false,
+            is_slash_cmd = false,
+            short_name = 'iam-study',
+            modes = { 'n', 'v' },
+          },
+          prompts = {
+            {
+              role = 'system',
+              content = function()
+                return load_prompt('identity-study', 'You are an Identity & Access Management study companion.')
+              end,
+            },
+            {
+              role = 'user',
+              content = '',
+            },
+          },
+        },
+        -- Identity Architect: Architecture & design analysis for IAM systems
+        -- System prompt at: ~/.local/share/nvim/prompts/identity-architect.md
+        ['Identity Architect'] = {
+          strategy = 'chat',
+          description = 'IAM Architecture & Software Design Advisor',
+          opts = {
+            index = 8,
+            is_default = false,
+            is_slash_cmd = false,
+            short_name = 'iam-arch',
+            modes = { 'n', 'v' },
+          },
+          prompts = {
+            {
+              role = 'system',
+              content = function()
+                return load_prompt('identity-architect', 'You are a Senior Identity Architect.')
+              end,
+            },
+            {
+              role = 'user',
+              content = '',
+            },
+          },
+        },
+      },
+      -- MCP (Model Context Protocol) Servers
+      -- MCP lets LLMs call external tool servers via JSON-RPC over stdio.
+      -- These add capabilities that built-in tools don't have.
+      -- Use /mcp in a chat buffer to toggle servers on/off.
+      mcp = {
+        servers = {
+          -- Live, up-to-date documentation for libraries/frameworks.
+          -- Instead of relying on stale training data, the AI fetches
+          -- current docs from the source. No API key needed.
+          -- https://github.com/upstash/context7
+          ['context7'] = {
+            cmd = { 'npx', '-y', '@upstash/context7-mcp@latest' },
+          },
+          -- Structured step-by-step reasoning with revision and branching.
+          -- Forces the AI to break complex problems into explicit steps
+          -- instead of jumping to conclusions. No API key needed.
+          -- https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking
+          ['sequential-thinking'] = {
+            cmd = { 'npx', '-y', '@modelcontextprotocol/server-sequential-thinking' },
+          },
+          -- PDF reader — extracts text and metadata from PDF files.
+          -- Lets the AI read books, papers, and documents directly.
+          -- https://github.com/github/pdf-reader-mcp
+          ['pdf-reader'] = {
+            cmd = { 'uvx', 'pdf-reader-mcp' },
+          },
+          -- Persistent memory as a knowledge graph.
+          -- The AI can store entities, relations and observations
+          -- that survive across conversations. Data lives in a local JSON file.
+          -- Works with any adapter (Copilot, Gemini, etc.) — it's an external
+          -- MCP server, not the Anthropic-specific built-in memory tool.
+          -- https://github.com/modelcontextprotocol/servers/tree/main/src/memory
+          ['memory'] = {
+            cmd = { 'npx', '-y', '@modelcontextprotocol/server-memory' },
+            env = {
+              MEMORY_FILE_PATH = vim.fn.stdpath 'data' .. '/mcp-memory/memory.json',
+            },
+          },
+        },
+        opts = {
+          -- Servers listed here auto-start when CodeCompanion loads.
+          -- Remove a name to make it on-demand only (toggle with /mcp in chat).
+          default_servers = { 'context7', 'sequential-thinking', 'pdf-reader', 'memory' },
+        },
       },
       display = {
         chat = {
@@ -122,5 +275,6 @@ return {
     { '<leader>ac', '<cmd>CodeCompanionChat Toggle<cr>', mode = { 'n', 'v' }, desc = '[A]I [C]hat' },
     { '<leader>ai', '<cmd>CodeCompanion<cr>', mode = 'v', desc = '[A]I [I]nline Edit' },
     { '<leader>aa', '<cmd>CodeCompanionActions<cr>', mode = { 'n', 'v' }, desc = '[A]I [A]ctions' },
+    { '<leader>as', '<cmd>CodeCompanion /sofi<cr>', mode = { 'n', 'v' }, desc = '[A]I [S]ofi' },
   },
 }

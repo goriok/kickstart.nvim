@@ -18,12 +18,21 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 - **Default Adapter**: GitHub Copilot
 - **Available Adapters**: GitHub Copilot, Google Gemini
 - **Extensions**: Chat history (`codecompanion-history.nvim`) — open with `gh`, save with `gW` inside chat buffer.
-- **Prompt Library**: `Browse Chat History` (`history`) and `Browse Summaries` (`summaries`) entries available via `<leader>aa`.
+- **MCP Servers** (Model Context Protocol): External tool servers that extend the AI's capabilities via JSON-RPC over stdio. Toggle with `/mcp` in a chat buffer.
+  - **Context7** (`@upstash/context7-mcp`): Live, up-to-date library/framework documentation. No API key.
+  - **Sequential Thinking** (`@modelcontextprotocol/server-sequential-thinking`): Structured step-by-step reasoning with revision/branching. No API key.
+  - **PDF Reader** (`pdf-reader-mcp`): Extracts text and metadata from PDF files. No API key.
+- **Prompt Library**: Switchable AI profiles loaded from external files (`~/.local/share/nvim/prompts/`). Available via `<leader>aa`:
+  - **Sofi** (`sofi`) — Philosophy mentor (Práxis Filosófica)
+  - **Identity Study** (`iam-study`) — OAuth2, OIDC, Federation tutor
+  - **Identity Architect** (`iam-arch`) — IAM architecture & design advisor
+  - `Browse Chat History` (`history`) and `Browse Summaries` (`summaries`)
 - **Statusline Spinner**: A braille spinner animates in the statusline while a request is in flight; `fidget.nvim` shows toast notifications on start/done.
 - **Keymaps**:
   - `<leader>ac`: Toggle AI Chat
   - `<leader>ai`: AI Inline Edit (Visual mode)
   - `<leader>aa`: AI Actions
+  - `<leader>as`: Open Sofi (Philosophy Mentor) chat
   - `gzs` *(chat buffer)*: Create chat summary
   - `gzb` *(chat buffer)*: Browse saved summaries
 
@@ -69,6 +78,7 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 | `<leader>sf` | Search Files |
 | `<leader>sg` | Live Grep |
 | `<leader>f` | Format buffer |
+| `<leader>as` | Open Sofi (Philosophy Mentor) |
 | `<leader>q` | Open diagnostic Quickfix list |
 | `<C-l>` | Accept Copilot suggestion (Insert mode) |
 | `<leader>mr` | Toggle Markdown render (in-editor) |
