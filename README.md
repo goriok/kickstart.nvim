@@ -35,6 +35,8 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
   - `<leader>as`: Open Sofi (Philosophy Mentor) chat
   - `gzs` *(chat buffer)*: Create chat summary
   - `gzb` *(chat buffer)*: Browse saved summaries
+- **Custom Commands**:
+  - `:CCTitle <new title>`: Rename the current chat (updates UI, history, and buffer name)
 
 ### Inline AI Suggestions
 - **Plugin**: [copilot.lua](https://github.com/zbirenbaum/copilot.lua)

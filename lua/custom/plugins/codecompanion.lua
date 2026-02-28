@@ -271,10 +271,27 @@ return {
       },
     }
   end,
+  init = function()
+    vim.api.nvim_create_user_command('CCTitle', function(opts)
+      local title = opts.args
+      if not title or title == '' then
+        vim.notify('Usage: :CCTitle <new title>', vim.log.levels.WARN)
+        return
+      end
+      local chat = require('codecompanion').buf_get_chat()
+      if not chat then
+        vim.notify('No active CodeCompanion chat buffer', vim.log.levels.WARN)
+        return
+      end
+      chat:set_title(title)
+      vim.notify('Chat title set to: ' .. title, vim.log.levels.INFO)
+    end, { nargs = '+', desc = 'Set the title of the current CodeCompanion chat' })
+  end,
   keys = {
     { '<leader>ac', '<cmd>CodeCompanionChat Toggle<cr>', mode = { 'n', 'v' }, desc = '[A]I [C]hat' },
     { '<leader>ai', '<cmd>CodeCompanion<cr>', mode = 'v', desc = '[A]I [I]nline Edit' },
     { '<leader>aa', '<cmd>CodeCompanionActions<cr>', mode = { 'n', 'v' }, desc = '[A]I [A]ctions' },
     { '<leader>as', '<cmd>CodeCompanion /sofi<cr>', mode = { 'n', 'v' }, desc = '[A]I [S]ofi' },
+    { '<leader>ag', '<cmd>CodeCompanion /commit<cr>', mode = 'n', desc = '[A]I [G]it Commit Message' },
   },
 }
