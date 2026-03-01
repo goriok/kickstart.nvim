@@ -24,6 +24,18 @@ return {
       return content
     end
 
+    -- Auto-add the built-in 'agent' group when the Copilot adapter is used.
+    -- The 'agent' group bundles code runner, editor, files tools + agent system prompt.
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'CodeCompanionChatCreated',
+      callback = function(ev)
+        local chat = require('codecompanion').buf_get_chat(ev.data.bufnr)
+        if chat and chat.adapter and chat.adapter.name == 'copilot' then
+          chat.tool_registry:add_group 'agent'
+        end
+      end,
+    })
+
     require('codecompanion').setup {
       adapters = {
         acp = {
