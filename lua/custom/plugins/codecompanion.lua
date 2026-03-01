@@ -214,6 +214,13 @@ return {
           ['pdf-reader'] = {
             cmd = { 'uvx', 'pdf-reader-mcp' },
           },
+          -- Git operations (status, diff, log, commit, branch, etc.) on local repos.
+          -- No GitHub/GitLab — pure Git. Pass the repo path as the first argument,
+          -- or omit it to default to the current working directory.
+          -- https://github.com/modelcontextprotocol/servers/tree/main/src/git
+          ['git'] = {
+            cmd = { 'uvx', 'mcp-server-git' },
+          },
           -- Persistent memory as a knowledge graph.
           -- The AI can store entities, relations and observations
           -- that survive across conversations. Data lives in a local JSON file.
@@ -230,7 +237,7 @@ return {
         opts = {
           -- Servers listed here auto-start when CodeCompanion loads.
           -- Remove a name to make it on-demand only (toggle with /mcp in chat).
-          default_servers = { 'context7' },
+          default_servers = { 'context7', 'git' },
         },
       },
       display = {

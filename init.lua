@@ -499,6 +499,11 @@ require('lazy').setup({
             override_vim_notify = true,
             window = {
               winblend = 0,
+              relative = 'editor',
+              x_padding = 1,
+              y_padding = 0,
+              align = 'top',
+              border = 'none',
             },
           },
         },
