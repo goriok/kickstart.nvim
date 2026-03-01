@@ -26,6 +26,15 @@ return {
 
     require('codecompanion').setup {
       adapters = {
+        acp = {
+          claude_code = function()
+            return require('codecompanion.adapters').extend('claude_code', {
+              env = {
+                CLAUDE_CODE_OAUTH_TOKEN = vim.env.CLAUDE_CODE_OAUTH_TOKEN,
+              },
+            })
+          end,
+        },
         copilot = function() return require('codecompanion.adapters').extend('copilot', {}) end,
         gemini = function()
           return require('codecompanion.adapters').extend('gemini', {
@@ -54,9 +63,7 @@ return {
             ---@return string
             llm = function(adapter)
               local model = adapter.model and adapter.model.name or nil
-              if model then
-                return adapter.formatted_name .. ' (' .. model .. ')'
-              end
+              if model then return adapter.formatted_name .. ' (' .. model .. ')' end
               return adapter.formatted_name
             end,
           },
@@ -90,12 +97,8 @@ return {
             modes = { 'n', 'v' },
           },
           prompts = {
-            n = function()
-              vim.cmd 'CodeCompanionHistory'
-            end,
-            v = function()
-              vim.cmd 'CodeCompanionHistory'
-            end,
+            n = function() vim.cmd 'CodeCompanionHistory' end,
+            v = function() vim.cmd 'CodeCompanionHistory' end,
           },
         },
         ['Browse Summaries'] = {
@@ -109,12 +112,8 @@ return {
             modes = { 'n', 'v' },
           },
           prompts = {
-            n = function()
-              vim.cmd 'CodeCompanionSummaries'
-            end,
-            v = function()
-              vim.cmd 'CodeCompanionSummaries'
-            end,
+            n = function() vim.cmd 'CodeCompanionSummaries' end,
+            v = function() vim.cmd 'CodeCompanionSummaries' end,
           },
         },
         -- Sofi: Mentora de Práxis Filosófica
@@ -130,14 +129,11 @@ return {
             short_name = 'sofi',
             modes = { 'n', 'v' },
             ignore_system_prompt = true,
-
           },
           prompts = {
             {
               role = 'system',
-              content = function()
-                return load_prompt('sofi', 'Você é Sofi, mentora de práxis filosófica.')
-              end,
+              content = function() return load_prompt('sofi', 'Você é Sofi, mentora de práxis filosófica.') end,
             },
             {
               role = 'user',
@@ -147,7 +143,7 @@ return {
         },
         -- Identity Study: OAuth2, OIDC, Federation tutor
         -- System prompt at: ~/.local/share/nvim/prompts/identity-study.md
-        ['Identity Study'] = {
+        ['Study'] = {
           strategy = 'chat',
           description = 'IAM Study Companion — OAuth2, OIDC, Federation',
           opts = {
@@ -160,9 +156,7 @@ return {
           prompts = {
             {
               role = 'system',
-              content = function()
-                return load_prompt('identity-study', 'You are an Identity & Access Management study companion.')
-              end,
+              content = function() return load_prompt('identity-study', 'You are an Identity & Access Management study companion.') end,
             },
             {
               role = 'user',
@@ -172,7 +166,7 @@ return {
         },
         -- Identity Architect: Architecture & design analysis for IAM systems
         -- System prompt at: ~/.local/share/nvim/prompts/identity-architect.md
-        ['Identity Architect'] = {
+        ['Architect'] = {
           strategy = 'chat',
           description = 'IAM Architecture & Software Design Advisor',
           opts = {
@@ -185,9 +179,7 @@ return {
           prompts = {
             {
               role = 'system',
-              content = function()
-                return load_prompt('identity-architect', 'You are a Senior Identity Architect.')
-              end,
+              content = function() return load_prompt('identity-architect', 'You are a Senior Identity Architect.') end,
             },
             {
               role = 'user',
@@ -238,7 +230,7 @@ return {
         opts = {
           -- Servers listed here auto-start when CodeCompanion loads.
           -- Remove a name to make it on-demand only (toggle with /mcp in chat).
-          default_servers = { 'context7', 'sequential-thinking', 'pdf-reader', 'memory' },
+          default_servers = { 'context7' },
         },
       },
       display = {
