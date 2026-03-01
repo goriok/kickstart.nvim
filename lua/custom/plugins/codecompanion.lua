@@ -55,7 +55,7 @@ return {
       },
       strategies = {
         chat = {
-          adapter = 'copilot',
+          adapter = 'claude_code',
           roles = {
             ---Show the adapter name + model in the chat header
             ---e.g. "Copilot (gpt-4o)" or "Gemini (gemini-3-flash-preview)"
@@ -72,7 +72,7 @@ return {
           adapter = 'copilot',
         },
         agent = {
-          adapter = 'copilot',
+          adapter = 'claude_code',
           tools = {
             ['editor'] = {
               callback = 'helpers.tools.editor',
@@ -237,7 +237,7 @@ return {
         opts = {
           -- Servers listed here auto-start when CodeCompanion loads.
           -- Remove a name to make it on-demand only (toggle with /mcp in chat).
-          default_servers = { 'context7', 'git' },
+          default_servers = { 'context7', 'git', 'memory', 'sequential-thinking' },
         },
       },
       display = {
