@@ -65,7 +65,7 @@ return {
           })
         end,
       },
-      strategies = {
+      interactions = {
         chat = {
           adapter = 'claude_code',
           roles = {
@@ -82,19 +82,6 @@ return {
         },
         inline = {
           adapter = 'copilot',
-        },
-        agent = {
-          adapter = 'claude_code',
-          tools = {
-            ['editor'] = {
-              callback = 'helpers.tools.editor',
-              description = 'Update a buffer',
-            },
-            ['files'] = {
-              callback = 'helpers.tools.files',
-              description = 'File operations',
-            },
-          },
         },
       },
       prompt_library = {
