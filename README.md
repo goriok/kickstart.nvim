@@ -18,12 +18,13 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 
 - **Plugin**: [codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim)
 - **Default Adapter**: GitHub Copilot
-- **Available Adapters**: GitHub Copilot, Google Gemini
+- **Available Adapters**: GitHub Copilot, Google Gemini, Claude Code
 - **Extensions**: Chat history (`codecompanion-history.nvim`) — open with `gh`, save with `gW` inside chat buffer.
 - **MCP Servers** (Model Context Protocol): External tool servers that extend the AI's capabilities via JSON-RPC over stdio. Toggle with `/mcp` in a chat buffer.
   - **Context7** (`@upstash/context7-mcp`): Live, up-to-date library/framework documentation. No API key.
   - **Sequential Thinking** (`@modelcontextprotocol/server-sequential-thinking`): Structured step-by-step reasoning with revision/branching. No API key.
   - **PDF Reader** (`pdf-reader-mcp`): Extracts text and metadata from PDF files. No API key.
+- **MCP Auto-start**: Only Context7 starts automatically. Sequential Thinking, PDF Reader, and Memory are on-demand — toggle with `/mcp` in chat.
 - **Prompt Library**: Switchable AI profiles loaded from external files (`~/.local/share/nvim/prompts/`). Available via `<leader>aa`:
   - **Sofi** (`sofi`) — Philosophy mentor (Práxis Filosófica)
   - **Study** (`iam-study`) — OAuth2, OIDC, Federation tutor
