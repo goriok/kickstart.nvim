@@ -978,10 +978,15 @@ require('lazy').setup({
         end,
       })
 
+      -- Circuit breaker: warns at turn 7, hard notification at turn 10.
+      require('custom.cc_budget').setup()
+
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
-        if spinner_timer then return spinner_frames[spinner_idx] .. ' ' .. '%2l:%-2v' end
-        return '%2l:%-2v'
+        local loc = (spinner_timer and (spinner_frames[spinner_idx] .. ' ') or '') .. '%2l:%-2v'
+        local budget = require('custom.cc_budget').statusline()
+        if budget ~= '' then return loc .. '  ' .. budget end
+        return loc
       end
 
       -- ... and there is more!

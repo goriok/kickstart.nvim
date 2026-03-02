@@ -186,6 +186,175 @@ return {
             },
           },
         },
+
+        -- ── Token-efficient engineering templates ─────────────────────────────
+
+        -- Deep Think: force explicit chain-of-thought before answering.
+        -- Use for architecture decisions, security analysis, complex debugging.
+        -- Activate via <leader>aT or :CodeCompanion /think
+        ['Deep Think'] = {
+          strategy = 'chat',
+          description = 'Force step-by-step reasoning (architecture / security / hard bugs)',
+          opts = {
+            index = 9,
+            is_default = false,
+            is_slash_cmd = true,
+            short_name = 'think',
+            modes = { 'n', 'v' },
+            ignore_system_prompt = false,
+          },
+          prompts = {
+            {
+              role = 'system',
+              content = [[You are a senior engineer who reasons explicitly before answering.
+
+PROTOCOL:
+1. THINK: Restate the problem in your own words. List assumptions and unknowns.
+2. EXPLORE: Consider ≥2 approaches and their trade-offs (performance, security, maintainability).
+3. DECIDE: Choose the best approach. Justify the choice.
+4. ANSWER: Provide the concrete solution, code, or recommendation.
+
+Never skip to the answer. If the question is ambiguous, surface the ambiguity in THINK.]],
+            },
+            {
+              role = 'user',
+              content = '',
+            },
+          },
+        },
+
+        -- Legacy Codebase Audit: uses Repomix MCP to pack the repo.
+        -- Ensure Repomix MCP is enabled (/mcp → toggle repomix) before running.
+        ['Legacy Audit'] = {
+          strategy = 'chat',
+          description = 'Structured audit: tech debt, security, dead code, dependencies',
+          opts = {
+            index = 10,
+            is_default = false,
+            is_slash_cmd = true,
+            short_name = 'audit',
+            modes = { 'n' },
+          },
+          prompts = {
+            {
+              role = 'system',
+              content = [[You are a senior engineer conducting a structured legacy codebase audit.
+Be precise: cite file paths and line numbers. Prioritize findings by severity.
+Severity scale: Critical (data loss / security breach) → High (prod bug / auth flaw) → Medium (tech debt / perf) → Low (style / cleanup).]],
+            },
+            {
+              role = 'user',
+              content = [[Use the Repomix MCP tool to pack and read this repository, then produce a structured audit report.
+
+## Executive Summary
+One paragraph: overall health, biggest risk, recommended next action.
+
+## Critical Issues
+Issues that could cause data loss, security breaches, or production outages.
+Format: `file:line` | severity | description | fix
+
+## High Priority
+Auth flaws, logic bugs, broken error handling.
+
+## Tech Debt Hotspots
+Modules with the highest complexity / churn ratio. Flag circular deps.
+
+## Dead Code & Unused Dependencies
+Files, functions, or packages safe to delete.
+
+## Quick Wins (< 30 min each)
+Low-hanging improvements: rename, extract function, add guard clause.
+
+## Dependency Risks
+Outdated, unmaintained, or CVE-affected packages.
+
+Keep each section ≤ 10 items. Signal if you need more context.]],
+            },
+          },
+        },
+
+        -- Security Review: OWASP-focused analysis of the current buffer or selection.
+        ['Security Review'] = {
+          strategy = 'chat',
+          description = 'OWASP Top 10 security review of current file or selection',
+          opts = {
+            index = 11,
+            is_default = false,
+            is_slash_cmd = true,
+            short_name = 'sec',
+            modes = { 'n', 'v' },
+          },
+          prompts = {
+            {
+              role = 'system',
+              content = [[You are an application security engineer.
+Check against: OWASP Top 10, injection (SQL/NoSQL/command/LDAP), broken auth/authz, IDOR, SSRF, XXE, insecure deserialization, sensitive data exposure, and security misconfiguration.
+Distinguish confirmed vulnerabilities from potential risks. Cite file:line for every finding.]],
+            },
+            {
+              role = 'user',
+              content = [[Review the code in #buffer for security vulnerabilities.
+
+For each finding use this format:
+
+---
+**[SEVERITY]** OWASP-CAT — Short title
+- **Location**: `file:line`
+- **Description**: What is vulnerable and why.
+- **Exploit scenario**: One concrete abuse case.
+- **Fix**: Minimal code change or configuration to remediate.
+---
+
+Severity levels: Critical / High / Medium / Low / Informational
+End with a **Risk Summary** table: | Severity | Count | Highest Impact Finding |]],
+            },
+          },
+        },
+
+        -- Refactor Plan: safe, incremental refactoring proposal with rollback steps.
+        ['Refactor Plan'] = {
+          strategy = 'chat',
+          description = 'Incremental refactoring plan with rollback strategy',
+          opts = {
+            index = 12,
+            is_default = false,
+            is_slash_cmd = true,
+            short_name = 'refactor',
+            modes = { 'n', 'v' },
+          },
+          prompts = {
+            {
+              role = 'system',
+              content = [[You are a senior engineer creating a safe, incremental refactoring plan.
+Constraints: keep each step independently deployable, preserve all existing tests, never break the public API unless explicitly asked.
+Think in phases: understand → identify smells → propose steps → estimate risk.]],
+            },
+            {
+              role = 'user',
+              content = [[Create a refactoring plan for the code in #buffer.
+
+## Current State Analysis
+- Key responsibilities of this module
+- Code smells identified (with file:line)
+- Test coverage estimate
+
+## Proposed Refactoring Steps
+Number each step. For each:
+- **Goal**: What improves
+- **Change**: Concrete transformation (extract method / inline / move module / etc.)
+- **Risk**: Low / Medium / High
+- **Rollback**: How to revert if it breaks something
+
+## Suggested Order
+Which steps can be parallelised? Which are blockers?
+
+## Out of Scope
+Anything you intentionally excluded and why.
+
+Keep the plan realistic for a single sprint. Flag if the scope is larger.]],
+            },
+          },
+        },
       },
       -- MCP (Model Context Protocol) Servers
       -- MCP lets LLMs call external tool servers via JSON-RPC over stdio.
@@ -219,6 +388,14 @@ return {
           -- https://github.com/modelcontextprotocol/servers/tree/main/src/git
           ['git'] = {
             cmd = { 'uvx', 'mcp-server-git' },
+          },
+          -- Repomix — packs a repository (or subset of files) into a single
+          -- AI-friendly text file (XML/plain/markdown). Useful for giving the
+          -- AI full codebase context in one shot.
+          -- Run on-demand via `/mcp` in chat; no API key needed.
+          -- https://github.com/yamadashy/repomix
+          ['repomix'] = {
+            cmd = { 'npx', '-y', 'repomix', '--mcp' },
           },
           -- Persistent memory as a knowledge graph.
           -- The AI can store entities, relations and observations
@@ -291,5 +468,14 @@ return {
     { '<leader>aa', '<cmd>CodeCompanionActions<cr>', mode = { 'n', 'v' }, desc = '[A]I [A]ctions' },
     { '<leader>as', '<cmd>CodeCompanion /sofi<cr>', mode = { 'n', 'v' }, desc = '[A]I [S]ofi' },
     { '<leader>ag', '<cmd>CodeCompanion /commit<cr>', mode = 'n', desc = '[A]I [G]it Commit Message' },
+    -- Deep Think: open chat in explicit chain-of-thought mode
+    { '<leader>aT', '<cmd>CodeCompanion /think<cr>', mode = { 'n', 'v' }, desc = '[A]I Deep [T]hink (CoT)' },
+    -- Reset circuit-breaker turn counter for the active chat buffer
+    {
+      '<leader>aR',
+      function() require('custom.cc_budget').reset() end,
+      mode = 'n',
+      desc = '[A]I [R]eset turn counter',
+    },
   },
 }
