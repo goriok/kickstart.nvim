@@ -30,9 +30,7 @@ return {
       pattern = 'CodeCompanionChatCreated',
       callback = function(ev)
         local chat = require('codecompanion').buf_get_chat(ev.data.bufnr)
-        if chat and chat.adapter and chat.adapter.name == 'copilot' then
-          chat.tool_registry:add_group 'agent'
-        end
+        if chat and chat.adapter and chat.adapter.name == 'copilot' then chat.tool_registry:add_group 'agent' end
       end,
     })
 
@@ -115,80 +113,7 @@ return {
             v = function() vim.cmd 'CodeCompanionSummaries' end,
           },
         },
-        -- Sofi: Mentora de Práxis Filosófica
-        -- System prompt lives outside the repo at: ~/.local/share/nvim/prompts/sofi.md
-        -- Uses Gemini adapter (switch models with `ga` in chat)
-        ['Sofi'] = {
-          strategy = 'chat',
-          description = 'Mentora de Práxis Filosófica e Historiadora das Ideias',
-          opts = {
-            index = 6,
-            is_default = false,
-            is_slash_cmd = false,
-            short_name = 'sofi',
-            modes = { 'n', 'v' },
-            ignore_system_prompt = true,
-          },
-          prompts = {
-            {
-              role = 'system',
-              content = function() return load_prompt('sofi', 'Você é Sofi, mentora de práxis filosófica.') end,
-            },
-            {
-              role = 'user',
-              content = '',
-            },
-          },
-        },
-        -- Identity Study: OAuth2, OIDC, Federation tutor
-        -- System prompt at: ~/.local/share/nvim/prompts/identity-study.md
-        ['Study'] = {
-          strategy = 'chat',
-          description = 'IAM Study Companion — OAuth2, OIDC, Federation',
-          opts = {
-            index = 7,
-            is_default = false,
-            is_slash_cmd = false,
-            short_name = 'iam-study',
-            modes = { 'n', 'v' },
-          },
-          prompts = {
-            {
-              role = 'system',
-              content = function() return load_prompt('identity-study', 'You are an Identity & Access Management study companion.') end,
-            },
-            {
-              role = 'user',
-              content = '',
-            },
-          },
-        },
-        -- Identity Architect: Architecture & design analysis for IAM systems
-        -- System prompt at: ~/.local/share/nvim/prompts/identity-architect.md
-        ['Architect'] = {
-          strategy = 'chat',
-          description = 'IAM Architecture & Software Design Advisor',
-          opts = {
-            index = 8,
-            is_default = false,
-            is_slash_cmd = false,
-            short_name = 'iam-arch',
-            modes = { 'n', 'v' },
-          },
-          prompts = {
-            {
-              role = 'system',
-              content = function() return load_prompt('identity-architect', 'You are a Senior Identity Architect.') end,
-            },
-            {
-              role = 'user',
-              content = '',
-            },
-          },
-        },
-
         -- ── Token-efficient engineering templates ─────────────────────────────
-
         -- Deep Think: force explicit chain-of-thought before answering.
         -- Use for architecture decisions, security analysis, complex debugging.
         -- Activate via <leader>aT or :CodeCompanion /think
@@ -413,7 +338,7 @@ Keep the plan realistic for a single sprint. Flag if the scope is larger.]],
         opts = {
           -- Servers listed here auto-start when CodeCompanion loads.
           -- Remove a name to make it on-demand only (toggle with /mcp in chat).
-          default_servers = { 'context7', 'git', 'memory', 'sequential-thinking' },
+          default_servers = { 'context7', 'git', 'memory' },
         },
       },
       display = {
