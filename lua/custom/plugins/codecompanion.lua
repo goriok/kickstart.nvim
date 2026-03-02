@@ -45,23 +45,35 @@ return {
             })
           end,
         },
-        copilot = function() return require('codecompanion.adapters').extend('copilot', {}) end,
-        gemini = function()
-          return require('codecompanion.adapters').extend('gemini', {
-            env = {
-              api_key = vim.env.GEMINI_API_KEY,
-            },
-            schema = {
-              model = {
-                default = 'gemini-3-flash-preview',
-                choices = {
-                  ['gemini-3-flash-preview'] = { opts = { can_reason = true, has_vision = true } },
-                  ['gemini-3-pro-preview'] = { opts = { can_reason = true, has_vision = true } },
+        http = {
+          copilot = function()
+            return require('codecompanion.adapters').extend('copilot', {
+              schema = {
+                model = {
+                  -- gpt-4.1 is unlimited on Copilot Pro (0 premium requests).
+                  -- Models are fetched dynamically from the API; this just sets the default.
+                  default = 'gpt-4.1',
                 },
               },
-            },
-          })
-        end,
+            })
+          end,
+          gemini = function()
+            return require('codecompanion.adapters').extend('gemini', {
+              env = {
+                api_key = vim.env.GEMINI_API_KEY,
+              },
+              schema = {
+                model = {
+                  default = 'gemini-3-flash-preview',
+                  choices = {
+                    ['gemini-3-flash-preview'] = { opts = { can_reason = true, has_vision = true } },
+                    ['gemini-3-pro-preview'] = { opts = { can_reason = true, has_vision = true } },
+                  },
+                },
+              },
+            })
+          end,
+        },
       },
       interactions = {
         chat = {

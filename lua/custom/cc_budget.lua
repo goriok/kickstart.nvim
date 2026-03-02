@@ -1,6 +1,7 @@
 -- lua/custom/cc_budget.lua
 -- Circuit breaker + turn tracking for CodeCompanion.
 -- Warns at WARN_AT turns, fires a hard notification at MAX_TURNS.
+-- Tracks active adapter/model per buffer for budget-aware statusline.
 -- Exposes M.statusline() for mini.statusline integration.
 -- Call M.setup() once during startup (see mini.nvim config in init.lua).
 
@@ -9,7 +10,7 @@ local M = {}
 M.MAX_TURNS = 10
 M.WARN_AT = 7
 
--- state[bufnr] = { turns = n, warned = bool }
+-- state[bufnr] = { turns = n, warned = bool, adapter = string|nil, model = string|nil }
 local state = {}
 -- most recently focused codecompanion buffer (used as fallback by statusline)
 local last_cc_buf = nil
@@ -57,7 +58,7 @@ function M.setup()
     end,
   })
 
-  -- Increment counter on each request; fire warnings at thresholds.
+  -- Increment counter on each request; track adapter/model; fire warnings.
   vim.api.nvim_create_autocmd('User', {
     group = g,
     pattern = 'CodeCompanionRequestStarted',
@@ -66,6 +67,14 @@ function M.setup()
       if not state[b] then state[b] = { turns = 0, warned = false } end
       state[b].turns = state[b].turns + 1
       local n = state[b].turns
+
+      -- Track active adapter and model from the event data.
+      -- ev.data carries { adapter = { name, formatted_name, model } }
+      local adapter = ev.data and ev.data.adapter
+      if adapter then
+        state[b].adapter = adapter.name
+        state[b].model = adapter.model
+      end
 
       if n == M.MAX_TURNS then
         vim.notify(
@@ -96,7 +105,18 @@ function M.setup()
   })
 end
 
+--- Shorten a model id for statusline display.
+--- "gpt-4.1" → "gpt-4.1", "claude-sonnet-4.5" → "sonnet-4.5"
+---@param model string
+---@return string
+local function short_model(model)
+  if not model or model == '' then return '' end
+  -- strip common vendor prefixes
+  return (model:gsub('^claude%-', ''):gsub('^gpt%-', 'gpt'))
+end
+
 --- Statusline component. Returns '' when there is no tracked CC session.
+--- Format: icon T:n/max adapter(model)
 --- Icons: 💬 normal · ⚠  approaching limit · ⛔ at limit
 function M.statusline()
   local b = last_cc_buf
@@ -105,7 +125,13 @@ function M.statusline()
   if not s or s.turns == 0 then return '' end
   local n = s.turns
   local icon = n >= M.MAX_TURNS and '⛔' or n >= M.WARN_AT and '⚠ ' or '💬'
-  return ('%sT:%d/%d'):format(icon, n, M.MAX_TURNS)
+  local suffix = ''
+  if s.adapter and s.model and s.model ~= '' then
+    suffix = ' ' .. s.adapter .. '(' .. short_model(s.model) .. ')'
+  elseif s.adapter then
+    suffix = ' ' .. s.adapter
+  end
+  return ('%sT:%d/%d%s'):format(icon, n, M.MAX_TURNS, suffix)
 end
 
 --- Returns the raw turn count for a buffer (or last active CC buf).
@@ -126,7 +152,8 @@ function M.reset(bufnr)
     vim.notify('No active CodeCompanion chat found', vim.log.levels.WARN)
     return
   end
-  state[b] = { turns = 0, warned = false }
+  local prev = state[b]
+  state[b] = { turns = 0, warned = false, adapter = prev and prev.adapter, model = prev and prev.model }
   vim.notify('CC Budget: counter reset for buf ' .. b, vim.log.levels.INFO, { title = 'CC Budget' })
   vim.cmd.redrawstatus()
 end
