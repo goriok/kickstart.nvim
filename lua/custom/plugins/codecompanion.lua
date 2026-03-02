@@ -77,7 +77,7 @@ return {
       },
       interactions = {
         chat = {
-          adapter = 'claude_code',
+          adapter = 'copilot',
           roles = {
             ---Show the adapter name + model in the chat header
             ---e.g. "Copilot (gpt-4o)" or "Gemini (gemini-3-flash-preview)"
@@ -125,13 +125,9 @@ return {
             v = function() vim.cmd 'CodeCompanionSummaries' end,
           },
         },
-        -- ── Token-efficient engineering templates ─────────────────────────────
-        -- Deep Think: force explicit chain-of-thought before answering.
-        -- Use for architecture decisions, security analysis, complex debugging.
-        -- Activate via <leader>aT or :CodeCompanion /think
-        ['Deep Think'] = {
+        ['With CoT'] = {
           strategy = 'chat',
-          description = 'Force step-by-step reasoning (architecture / security / hard bugs)',
+          description = 'Grounded Chain-of-Thought: Evaluation of logic and trade-offs before implementation',
           opts = {
             index = 9,
             is_default = false,
@@ -143,15 +139,20 @@ return {
           prompts = {
             {
               role = 'system',
-              content = [[You are a senior engineer who reasons explicitly before answering.
+              content = [[You are a Lead Systems Architect. You must validate logic and evaluate trade-offs before providing any technical solution.
 
-PROTOCOL:
-1. THINK: Restate the problem in your own words. List assumptions and unknowns.
-2. EXPLORE: Consider ≥2 approaches and their trade-offs (performance, security, maintainability).
-3. DECIDE: Choose the best approach. Justify the choice.
-4. ANSWER: Provide the concrete solution, code, or recommendation.
+OPERATIONAL CONSTRAINTS:
+1. GROUNDING: Base all logic strictly on the provided context. Do not invent libraries or architectural states not present.
+2. CIRCUIT BREAKER: Limit each PHASE to 10 bullet points or fewer. Signal "REASONING_LIMIT_REACHED" if more depth is required.
+3. PRECISION: Cite file paths and line numbers during the EXPLORE and ANSWER phases.
 
-Never skip to the answer. If the question is ambiguous, surface the ambiguity in THINK.]],
+ANALYSIS PROTOCOL:
+- PHASE 1 (THINK): Restate core problem. Identify edge cases, assumptions, and missing context.
+- PHASE 2 (EXPLORE): Evaluate ≥2 distinct approaches. Compare performance, security, and maintainability.
+- PHASE 3 (DECIDE): Select the optimal path and justify.
+- PHASE 4 (ANSWER): Deliver final implementation or refined technical advice.
+
+STRICT RULE: Never skip to the answer. If ambiguous, stop at PHASE 1 and request clarification.]],
             },
             {
               role = 'user',
@@ -159,12 +160,9 @@ Never skip to the answer. If the question is ambiguous, surface the ambiguity in
             },
           },
         },
-
-        -- Legacy Codebase Audit: uses Repomix MCP to pack the repo.
-        -- Ensure Repomix MCP is enabled (/mcp → toggle repomix) before running.
-        ['Legacy Audit'] = {
+        ['With Repomix'] = {
           strategy = 'chat',
-          description = 'Structured audit: tech debt, security, dead code, dependencies',
+          description = 'Audit Agent: ReAct pattern utilizing MCP tools for repository ingestion',
           opts = {
             index = 10,
             is_default = false,
@@ -175,37 +173,35 @@ Never skip to the answer. If the question is ambiguous, surface the ambiguity in
           prompts = {
             {
               role = 'system',
-              content = [[You are a senior engineer conducting a structured legacy codebase audit.
-Be precise: cite file paths and line numbers. Prioritize findings by severity.
-Severity scale: Critical (data loss / security breach) → High (prod bug / auth flaw) → Medium (tech debt / perf) → Low (style / cleanup).]],
+              content = [[You are a Senior Software Engineer. Your mission is to conduct a rigorous, evidence-based codebase analysis.
+
+OPERATIONAL CONSTRAINTS:
+1. GROUNDING: Base all claims strictly on provided code. Do not infer logic that is not present.
+2. PRECISION: Every observation MUST cite the file path and specific line numbers.
+3. CIRCUIT BREAKER: Limit each section to 10 items or fewer. Signal "CONTEXT_LIMIT_REACHED" if more context is needed.
+4. TONE: Concise, technical, and objective. No conversational filler.]],
             },
             {
               role = 'user',
-              content = [[Use the Repomix MCP tool to pack and read this repository, then produce a structured audit report.
+              content = [[TASK: Perform a structured audit on the provided repository. 
 
-## Executive Summary
-One paragraph: overall health, biggest risk, recommended next action.
+INSTRUCTIONS:
+If a consolidated repomix file is not present, use the Repomix MCP tool to pack and analyze the repository.
 
-## Critical Issues
-Issues that could cause data loss, security breaches, or production outages.
-Format: `file:line` | severity | description | fix
+REQUIRED OUTPUT STRUCTURE:
 
-## High Priority
-Auth flaws, logic bugs, broken error handling.
+EXECUTIVE SUMMARY:
+- Provide a single, high-level paragraph summarizing how the subject is handled.
 
-## Tech Debt Hotspots
-Modules with the highest complexity / churn ratio. Flag circular deps.
+TECHNICAL DEEP-DIVE:
+- List observations with code references: [File Path > Line Number: Code Snippet/Context].
 
-## Dead Code & Unused Dependencies
-Files, functions, or packages safe to delete.
+SOLUTION SUGGESTIONS:
+- List actionable architectural or code-level improvements.
 
-## Quick Wins (< 30 min each)
-Low-hanging improvements: rename, extract function, add guard clause.
-
-## Dependency Risks
-Outdated, unmaintained, or CVE-affected packages.
-
-Keep each section ≤ 10 items. Signal if you need more context.]],
+CONCLUSION:
+- Provide a final, concise verdict on implementation health.
+]],
             },
           },
         },
