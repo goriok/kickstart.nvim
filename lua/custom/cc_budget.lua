@@ -18,17 +18,11 @@ local last_cc_buf = nil
 --- Resolve the codecompanion buffer from an autocmd event.
 --- Priority: ev.data.bufnr → last known CC buf → any visible CC win → current buf.
 local function resolve_buf(ev)
-  if ev and ev.data and type(ev.data.bufnr) == 'number' then
-    return ev.data.bufnr
-  end
-  if last_cc_buf and vim.api.nvim_buf_is_valid(last_cc_buf) then
-    return last_cc_buf
-  end
+  if ev and ev.data and type(ev.data.bufnr) == 'number' then return ev.data.bufnr end
+  if last_cc_buf and vim.api.nvim_buf_is_valid(last_cc_buf) then return last_cc_buf end
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local b = vim.api.nvim_win_get_buf(win)
-    if vim.bo[b].filetype == 'codecompanion' then
-      return b
-    end
+    if vim.bo[b].filetype == 'codecompanion' then return b end
   end
   return vim.api.nvim_get_current_buf()
 end
@@ -40,9 +34,7 @@ function M.setup()
   vim.api.nvim_create_autocmd('BufEnter', {
     group = g,
     callback = function(ev)
-      if vim.bo[ev.buf].filetype == 'codecompanion' then
-        last_cc_buf = ev.buf
-      end
+      if vim.bo[ev.buf].filetype == 'codecompanion' then last_cc_buf = ev.buf end
     end,
   })
 
@@ -68,8 +60,6 @@ function M.setup()
       state[b].turns = state[b].turns + 1
       local n = state[b].turns
 
-      -- Track active adapter and model from the event data.
-      -- ev.data carries { adapter = { name, formatted_name, model } }
       local adapter = ev.data and ev.data.adapter
       if adapter then
         state[b].adapter = adapter.name

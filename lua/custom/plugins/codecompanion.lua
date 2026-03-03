@@ -3,29 +3,10 @@ return {
   dependencies = {
     'nvim-lua/plenary.nvim',
     'nvim-treesitter/nvim-treesitter',
-    'zbirenbaum/copilot.lua', -- Ensure copilot is loaded
-    'ravitemer/codecompanion-history.nvim', -- Chat history extension
+    'zbirenbaum/copilot.lua',
+    'ravitemer/codecompanion-history.nvim',
   },
   config = function()
-    --- Read a system prompt from ~/.local/share/nvim/prompts/<name>.md
-    --- Keeps prompts outside the repo (private, not pushed to GitHub)
-    ---@param name string filename without extension
-    ---@param fallback string fallback if file not found
-    ---@return string
-    local function load_prompt(name, fallback)
-      local path = vim.fn.stdpath 'data' .. '/prompts/' .. name .. '.md'
-      local f = io.open(path, 'r')
-      if not f then
-        vim.notify('Prompt not found: ' .. path, vim.log.levels.WARN)
-        return fallback
-      end
-      local content = f:read '*a'
-      f:close()
-      return content
-    end
-
-    -- Auto-add the built-in 'agent' group when the Copilot adapter is used.
-    -- The 'agent' group bundles code runner, editor, files tools + agent system prompt.
     vim.api.nvim_create_autocmd('User', {
       pattern = 'CodeCompanionChatCreated',
       callback = function(ev)
@@ -50,8 +31,6 @@ return {
             return require('codecompanion.adapters').extend('copilot', {
               schema = {
                 model = {
-                  -- gpt-4.1 is unlimited on Copilot Pro (0 premium requests).
-                  -- Models are fetched dynamically from the API; this just sets the default.
                   default = 'gpt-4.1',
                 },
               },
@@ -77,10 +56,13 @@ return {
       },
       interactions = {
         chat = {
-          adapter = 'copilot',
+          adapter = 'claude_code',
+          opts = {
+            stream = true,
+            max_tokens = 4096,
+            temperature = 0.5,
+          },
           roles = {
-            ---Show the adapter name + model in the chat header
-            ---e.g. "Copilot (gpt-4o)" or "Gemini (gemini-3-flash-preview)"
             ---@param adapter CodeCompanion.Adapter
             ---@return string
             llm = function(adapter)
@@ -90,8 +72,13 @@ return {
             end,
           },
         },
+        agent = {
+          opts = {
+            max_tokens = 4096,
+          },
+        },
         inline = {
-          adapter = 'copilot',
+          adapter = 'claude_code',
         },
       },
       prompt_library = {
@@ -129,9 +116,9 @@ return {
           strategy = 'chat',
           description = 'Grounded Chain-of-Thought: Evaluation of logic and trade-offs before implementation',
           opts = {
-            index = 9,
+            index = 6,
             is_default = false,
-            is_slash_cmd = true,
+            is_slash_cmd = false,
             short_name = 'think',
             modes = { 'n', 'v' },
             ignore_system_prompt = false,
@@ -166,7 +153,7 @@ STRICT RULE: Never skip to the answer. If ambiguous, stop at PHASE 1 and request
           opts = {
             index = 10,
             is_default = false,
-            is_slash_cmd = true,
+            is_slash_cmd = false,
             short_name = 'audit',
             modes = { 'n' },
           },
@@ -183,25 +170,7 @@ OPERATIONAL CONSTRAINTS:
             },
             {
               role = 'user',
-              content = [[TASK: Perform a structured audit on the provided repository. 
-
-INSTRUCTIONS:
-If a consolidated repomix file is not present, use the Repomix MCP tool to pack and analyze the repository.
-
-REQUIRED OUTPUT STRUCTURE:
-
-EXECUTIVE SUMMARY:
-- Provide a single, high-level paragraph summarizing how the subject is handled.
-
-TECHNICAL DEEP-DIVE:
-- List observations with code references: [File Path > Line Number: Code Snippet/Context].
-
-SOLUTION SUGGESTIONS:
-- List actionable architectural or code-level improvements.
-
-CONCLUSION:
-- Provide a final, concise verdict on implementation health.
-]],
+              content = '',
             },
           },
         },
@@ -213,7 +182,7 @@ CONCLUSION:
           opts = {
             index = 11,
             is_default = false,
-            is_slash_cmd = true,
+            is_slash_cmd = false,
             short_name = 'sec',
             modes = { 'n', 'v' },
           },
@@ -226,20 +195,7 @@ Distinguish confirmed vulnerabilities from potential risks. Cite file:line for e
             },
             {
               role = 'user',
-              content = [[Review the code in #buffer for security vulnerabilities.
-
-For each finding use this format:
-
----
-**[SEVERITY]** OWASP-CAT — Short title
-- **Location**: `file:line`
-- **Description**: What is vulnerable and why.
-- **Exploit scenario**: One concrete abuse case.
-- **Fix**: Minimal code change or configuration to remediate.
----
-
-Severity levels: Critical / High / Medium / Low / Informational
-End with a **Risk Summary** table: | Severity | Count | Highest Impact Finding |]],
+              content = '',
             },
           },
         },
@@ -264,27 +220,7 @@ Think in phases: understand → identify smells → propose steps → estimate r
             },
             {
               role = 'user',
-              content = [[Create a refactoring plan for the code in #buffer.
-
-## Current State Analysis
-- Key responsibilities of this module
-- Code smells identified (with file:line)
-- Test coverage estimate
-
-## Proposed Refactoring Steps
-Number each step. For each:
-- **Goal**: What improves
-- **Change**: Concrete transformation (extract method / inline / move module / etc.)
-- **Risk**: Low / Medium / High
-- **Rollback**: How to revert if it breaks something
-
-## Suggested Order
-Which steps can be parallelised? Which are blockers?
-
-## Out of Scope
-Anything you intentionally excluded and why.
-
-Keep the plan realistic for a single sprint. Flag if the scope is larger.]],
+              content = '',
             },
           },
         },
@@ -346,7 +282,7 @@ Keep the plan realistic for a single sprint. Flag if the scope is larger.]],
         opts = {
           -- Servers listed here auto-start when CodeCompanion loads.
           -- Remove a name to make it on-demand only (toggle with /mcp in chat).
-          default_servers = { 'context7', 'git', 'memory' },
+          default_servers = { 'context7', 'memory' },
         },
       },
       display = {
@@ -361,7 +297,6 @@ Keep the plan realistic for a single sprint. Flag if the scope is larger.]],
             -- Keymap to open history from chat buffer
             keymap = 'gh',
             -- Keymap to save the current chat manually
-            -- NOTE: avoid 'gsc' because 'gs' (toggle system prompt) fires before 'c'
             save_chat_keymap = 'gW',
             -- Save directory
             dir_to_save = vim.fn.stdpath 'data' .. '/codecompanion-history',
@@ -379,31 +314,10 @@ Keep the plan realistic for a single sprint. Flag if the scope is larger.]],
       },
     }
   end,
-  init = function()
-    vim.api.nvim_create_user_command('CCTitle', function(opts)
-      local title = opts.args
-      if not title or title == '' then
-        vim.notify('Usage: :CCTitle <new title>', vim.log.levels.WARN)
-        return
-      end
-      local chat = require('codecompanion').buf_get_chat()
-      if not chat then
-        vim.notify('No active CodeCompanion chat buffer', vim.log.levels.WARN)
-        return
-      end
-      chat:set_title(title)
-      vim.notify('Chat title set to: ' .. title, vim.log.levels.INFO)
-    end, { nargs = '+', desc = 'Set the title of the current CodeCompanion chat' })
-  end,
   keys = {
     { '<leader>ac', '<cmd>CodeCompanionChat Toggle<cr>', mode = { 'n', 'v' }, desc = '[A]I [C]hat' },
     { '<leader>ai', '<cmd>CodeCompanion<cr>', mode = 'v', desc = '[A]I [I]nline Edit' },
     { '<leader>aa', '<cmd>CodeCompanionActions<cr>', mode = { 'n', 'v' }, desc = '[A]I [A]ctions' },
-    { '<leader>as', '<cmd>CodeCompanion /sofi<cr>', mode = { 'n', 'v' }, desc = '[A]I [S]ofi' },
-    { '<leader>ag', '<cmd>CodeCompanion /commit<cr>', mode = 'n', desc = '[A]I [G]it Commit Message' },
-    -- Deep Think: open chat in explicit chain-of-thought mode
-    { '<leader>aT', '<cmd>CodeCompanion /think<cr>', mode = { 'n', 'v' }, desc = '[A]I Deep [T]hink (CoT)' },
-    -- Reset circuit-breaker turn counter for the active chat buffer
     {
       '<leader>aR',
       function() require('custom.cc_budget').reset() end,
