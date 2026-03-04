@@ -1,0 +1,23 @@
+{
+  "output": {
+    "filePath": "repomix-output.xml",
+    "style": "xml",
+    "removeComments": true,
+    "showLineNumbers": true
+  },
+  "include": ["**/*.lua", "init.lua", "lua/**/*.lua", "README.md"],
+  "ignore": {
+    "customPatterns": [
+      "**/plugin/packer_compiled.lua",
+      "**/.git/**",
+      "**/node_modules/**",
+      "**/undo/**",
+      "**/site/**",
+      "**/spell/**",
+      "**/lazy-lock.json",
+      "**/*.log"
+    ],
+    "useGitignore": true,
+    "useDefaultIgnore": true
+  }
+}

@@ -162,10 +162,10 @@ vim.o.scrolloff = 10
 -- Folding via Treesitter (native in Neovim 0.10+)
 vim.o.foldmethod = 'expr'
 vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-vim.o.foldtext = ''           -- use the first line of the fold as-is (clean look)
-vim.o.foldlevel = 99          -- open all folds by default
-vim.o.foldlevelstart = 99     -- same for new buffers
-vim.o.foldnestmax = 4         -- limit fold depth (avoid overly nested folds)
+vim.o.foldtext = '' -- use the first line of the fold as-is (clean look)
+vim.o.foldlevel = 99 -- open all folds by default
+vim.o.foldlevelstart = 99 -- same for new buffers
+vim.o.foldnestmax = 4 -- limit fold depth (avoid overly nested folds)
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
@@ -920,74 +920,74 @@ require('lazy').setup({
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
+      --local statusline = require 'mini.statusline'
       -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      --statusline.setup { use_icons = vim.g.have_nerd_font }
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function() return '%2l:%-2v' end
+      ---statusline.section_location = function() return '%2l:%-2v' end
 
       -- CodeCompanion spinner in the statusline
-      local spinner_frames = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' }
-      local spinner_idx = 1
-      local spinner_timer = nil
-      local cc_active_requests = 0
+      --local spinner_frames = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' }
+      --local spinner_idx = 1
+      --local spinner_timer = nil
+      --local cc_active_requests = 0
 
-      local function start_spinner()
-        if spinner_timer then return end
-        spinner_idx = 1
-        spinner_timer = vim.uv.new_timer()
-        spinner_timer:start(
-          0,
-          80,
-          vim.schedule_wrap(function()
-            spinner_idx = (spinner_idx % #spinner_frames) + 1
-            vim.cmd.redrawstatus()
-          end)
-        )
-      end
+      --local function start_spinner()
+      --  if spinner_timer then return end
+      --  spinner_idx = 1
+      --  spinner_timer = vim.uv.new_timer()
+      --  spinner_timer:start(
+      --    0,
+      --    80,
+      --    vim.schedule_wrap(function()
+      --      spinner_idx = (spinner_idx % #spinner_frames) + 1
+      --      vim.cmd.redrawstatus()
+      --    end)
+      --  )
+      --end
 
-      local function stop_spinner()
-        if spinner_timer then
-          spinner_timer:stop()
-          spinner_timer:close()
-          spinner_timer = nil
-        end
-      end
+      --local function stop_spinner()
+      --  if spinner_timer then
+      --    spinner_timer:stop()
+      --    spinner_timer:close()
+      --    spinner_timer = nil
+      --  end
+      --end
 
-      vim.api.nvim_create_autocmd('User', {
-        pattern = 'CodeCompanionRequestStarted',
-        callback = function()
-          cc_active_requests = cc_active_requests + 1
-          start_spinner()
-          vim.notify('CodeCompanion thinking…', vim.log.levels.INFO, { title = 'CodeCompanion' })
-        end,
-      })
+      --vim.api.nvim_create_autocmd('User', {
+      --  pattern = 'CodeCompanionRequestStarted',
+      --  callback = function()
+      --    cc_active_requests = cc_active_requests + 1
+      --    start_spinner()
+      --    vim.notify('CodeCompanion thinking…', vim.log.levels.INFO, { title = 'CodeCompanion' })
+      --  end,
+      --})
 
-      vim.api.nvim_create_autocmd('User', {
-        pattern = 'CodeCompanionRequestFinished',
-        callback = function()
-          cc_active_requests = math.max(cc_active_requests - 1, 0)
-          if cc_active_requests == 0 then
-            stop_spinner()
-            vim.notify('CodeCompanion done ✓', vim.log.levels.INFO, { title = 'CodeCompanion' })
-          end
-        end,
-      })
+      --vim.api.nvim_create_autocmd('User', {
+      --  pattern = 'CodeCompanionRequestFinished',
+      --  callback = function()
+      --    cc_active_requests = math.max(cc_active_requests - 1, 0)
+      --    if cc_active_requests == 0 then
+      --      stop_spinner()
+      --      vim.notify('CodeCompanion done ✓', vim.log.levels.INFO, { title = 'CodeCompanion' })
+      --    end
+      --  end,
+      --})
 
       -- Circuit breaker: warns at turn 7, hard notification at turn 10.
-      require('custom.cc_budget').setup()
+      --require('custom.cc_budget').setup()
 
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        local loc = (spinner_timer and (spinner_frames[spinner_idx] .. ' ') or '') .. '%2l:%-2v'
-        local budget = require('custom.cc_budget').statusline()
-        if budget ~= '' then return loc .. '  ' .. budget end
-        return loc
-      end
+      --statusline.section_location = function()
+      --  local loc = (spinner_timer and (spinner_frames[spinner_idx] .. ' ') or '') .. '%2l:%-2v'
+      --  local budget = require('custom.cc_budget').statusline()
+      --  if budget ~= '' then return loc .. '  ' .. budget end
+      --  return loc
+      --end
 
       -- ... and there is more!
       --  Check out: https://github.com/nvim-mini/mini.nvim
