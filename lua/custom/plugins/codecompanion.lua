@@ -60,7 +60,7 @@ return {
           opts = {
             stream = true,
             max_tokens = 4096,
-            temperature = 0.5,
+            temperature = 0.7,
           },
           roles = {
             ---@param adapter CodeCompanion.Adapter
@@ -288,6 +288,7 @@ Think in phases: understand → identify smells → propose steps → estimate r
       display = {
         chat = {
           show_token_count = true,
+          render_headers = true, -- Mostra headers das respostas
         },
       },
       extensions = {

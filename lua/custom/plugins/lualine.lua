@@ -2,6 +2,7 @@ return {
   'nvim-lualine/lualine.nvim',
   dependencies = {
     'nvim-tree/nvim-web-devicons', -- Necessário para os ícones bonitos
+    'franco-ruggeri/codecompanion-lualine.nvim',
   },
   config = function()
     require('lualine').setup {
@@ -16,8 +17,15 @@ return {
         lualine_b = { 'branch', 'diff', 'diagnostics' },
         lualine_c = { 'filename' },
         lualine_x = {
-          -- É exatamente aqui que vamos colocar a função do contador de tokens!
-          -- Por enquanto, deixamos as informações padrão:
+          {
+            function()
+              local api = require('codecompanion').buf_get_chat(vim.fn.bufnr())
+              if api then return '🤖 ' .. (api.tokens or '-') end
+              return ''
+            end,
+            cond = function() return vim.bo.filetype == 'codecompanion' end,
+          },
+          'codecompanion',
           'encoding',
           'fileformat',
           'filetype',
