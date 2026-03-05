@@ -27,6 +27,22 @@ return {
           end,
         },
         http = {
+          qwen = function()
+            return require('codecompanion.adapters').extend('openai_compatible', {
+              name = 'qwen',
+              formatted_name = 'Qwen 2.5 Coder Q8 (local)',
+              env = {
+                url = 'http://localhost:8080',
+                api_key = 'none',
+                chat_url = '/v1/chat/completions',
+              },
+              schema = {
+                model = {
+                  default = 'qwen2.5-coder-7b',
+                },
+              },
+            })
+          end,
           copilot = function()
             return require('codecompanion.adapters').extend('copilot', {
               schema = {
