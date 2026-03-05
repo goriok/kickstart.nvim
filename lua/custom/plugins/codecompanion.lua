@@ -15,6 +15,29 @@ return {
       end,
     })
 
+    -- When adapter changes to ollama: strip rules (AGENTS.md context), system prompt, and agent group.
+    -- When leaving ollama: rules stay cleared (user can reload with /rules), system prompt
+    -- is restored automatically by change_adapter → set_system_prompt.
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'CodeCompanionChatAdapter',
+      callback = function(ev)
+        local adapter = ev.data and ev.data.adapter
+        if not adapter then return end
+        local chat = require('codecompanion').buf_get_chat(ev.data.bufnr)
+        if not chat then return end
+        if adapter.name == 'ollama' then
+          chat:remove_tagged_message 'rules'
+          chat:remove_tagged_message 'system_prompt_from_config'
+          chat.tool_registry:remove_group 'agent'
+          -- Remove rules context items (AGENTS.md, CLAUDE.md) from the context panel
+          local rules_ids = {}
+          for _, item in ipairs(chat.context_items or {}) do
+            if item.source == 'rules' then rules_ids[item.id] = true end
+          end
+          if next(rules_ids) then chat.context:remove_items(rules_ids) end
+        end
+      end,
+    })
     require('codecompanion').setup {
       adapters = {
         acp = {
@@ -27,19 +50,36 @@ return {
           end,
         },
         http = {
-          qwen = function()
+          ollama = function()
             return require('codecompanion.adapters').extend('openai_compatible', {
-              name = 'qwen',
-              formatted_name = 'Qwen 2.5 Coder Q8 (local)',
+              name = 'ollama',
               env = {
-                url = 'http://localhost:8080',
-                api_key = 'none',
+                url = 'http://localhost:11434',
+                api_key = 'ollama',
                 chat_url = '/v1/chat/completions',
               },
               schema = {
                 model = {
-                  default = 'qwen2.5-coder-7b',
+                  default = 'qwen2.5-coder:7b',
                 },
+                temperature = {
+                  order = 2,
+                  mapping = 'parameters',
+                  type = 'number',
+                  default = 0.7,
+                },
+                top_p = {
+                  order = 3,
+                  mapping = 'parameters',
+                  type = 'number',
+                  default = 0.9,
+                },
+              },
+              handlers = {
+                on_error = function(err)
+                  if type(err) == 'table' and err.stderr then return type(err.stderr) == 'table' and table.concat(err.stderr, '\n') or tostring(err.stderr) end
+                  return tostring(err)
+                end,
               },
             })
           end,
@@ -47,7 +87,7 @@ return {
             return require('codecompanion.adapters').extend('copilot', {
               schema = {
                 model = {
-                  default = 'gpt-4.1',
+                  default = 'claude-haiku-4-5-20251001',
                 },
               },
             })
@@ -77,10 +117,12 @@ return {
             stream = true,
             max_tokens = 4096,
             temperature = 0.7,
+            system_prompt = function(ctx)
+              if ctx.adapter and ctx.adapter.name == 'ollama' then return '' end
+              return ctx.default_system_prompt
+            end,
           },
           roles = {
-            ---@param adapter CodeCompanion.Adapter
-            ---@return string
             llm = function(adapter)
               local model = adapter.model and adapter.model.name or nil
               if model then return adapter.formatted_name .. ' (' .. model .. ')' end
@@ -98,7 +140,7 @@ return {
         },
       },
       prompt_library = {
-        ['Browse Chat History'] = {
+        ['Browse Chats'] = {
           strategy = 'chat',
           description = 'Browse and restore saved chat history',
           opts = {
@@ -128,166 +170,24 @@ return {
             v = function() vim.cmd 'CodeCompanionSummaries' end,
           },
         },
-        ['With CoT'] = {
-          strategy = 'chat',
-          description = 'Grounded Chain-of-Thought: Evaluation of logic and trade-offs before implementation',
-          opts = {
-            index = 6,
-            is_default = false,
-            is_slash_cmd = false,
-            short_name = 'think',
-            modes = { 'n', 'v' },
-            ignore_system_prompt = false,
-          },
-          prompts = {
-            {
-              role = 'system',
-              content = [[You are a Lead Systems Architect. You must validate logic and evaluate trade-offs before providing any technical solution.
-
-OPERATIONAL CONSTRAINTS:
-1. GROUNDING: Base all logic strictly on the provided context. Do not invent libraries or architectural states not present.
-2. CIRCUIT BREAKER: Limit each PHASE to 10 bullet points or fewer. Signal "REASONING_LIMIT_REACHED" if more depth is required.
-3. PRECISION: Cite file paths and line numbers during the EXPLORE and ANSWER phases.
-
-ANALYSIS PROTOCOL:
-- PHASE 1 (THINK): Restate core problem. Identify edge cases, assumptions, and missing context.
-- PHASE 2 (EXPLORE): Evaluate ≥2 distinct approaches. Compare performance, security, and maintainability.
-- PHASE 3 (DECIDE): Select the optimal path and justify.
-- PHASE 4 (ANSWER): Deliver final implementation or refined technical advice.
-
-STRICT RULE: Never skip to the answer. If ambiguous, stop at PHASE 1 and request clarification.]],
-            },
-            {
-              role = 'user',
-              content = '',
-            },
-          },
-        },
-        ['With Repomix'] = {
-          strategy = 'chat',
-          description = 'Audit Agent: ReAct pattern utilizing MCP tools for repository ingestion',
-          opts = {
-            index = 10,
-            is_default = false,
-            is_slash_cmd = false,
-            short_name = 'audit',
-            modes = { 'n' },
-          },
-          prompts = {
-            {
-              role = 'system',
-              content = [[You are a Senior Software Engineer. Your mission is to conduct a rigorous, evidence-based codebase analysis.
-
-OPERATIONAL CONSTRAINTS:
-1. GROUNDING: Base all claims strictly on provided code. Do not infer logic that is not present.
-2. PRECISION: Every observation MUST cite the file path and specific line numbers.
-3. CIRCUIT BREAKER: Limit each section to 10 items or fewer. Signal "CONTEXT_LIMIT_REACHED" if more context is needed.
-4. TONE: Concise, technical, and objective. No conversational filler.]],
-            },
-            {
-              role = 'user',
-              content = '',
-            },
-          },
-        },
-
-        -- Security Review: OWASP-focused analysis of the current buffer or selection.
-        ['Security Review'] = {
-          strategy = 'chat',
-          description = 'OWASP Top 10 security review of current file or selection',
-          opts = {
-            index = 11,
-            is_default = false,
-            is_slash_cmd = false,
-            short_name = 'sec',
-            modes = { 'n', 'v' },
-          },
-          prompts = {
-            {
-              role = 'system',
-              content = [[You are an application security engineer.
-Check against: OWASP Top 10, injection (SQL/NoSQL/command/LDAP), broken auth/authz, IDOR, SSRF, XXE, insecure deserialization, sensitive data exposure, and security misconfiguration.
-Distinguish confirmed vulnerabilities from potential risks. Cite file:line for every finding.]],
-            },
-            {
-              role = 'user',
-              content = '',
-            },
-          },
-        },
-
-        -- Refactor Plan: safe, incremental refactoring proposal with rollback steps.
-        ['Refactor Plan'] = {
-          strategy = 'chat',
-          description = 'Incremental refactoring plan with rollback strategy',
-          opts = {
-            index = 12,
-            is_default = false,
-            is_slash_cmd = true,
-            short_name = 'refactor',
-            modes = { 'n', 'v' },
-          },
-          prompts = {
-            {
-              role = 'system',
-              content = [[You are a senior engineer creating a safe, incremental refactoring plan.
-Constraints: keep each step independently deployable, preserve all existing tests, never break the public API unless explicitly asked.
-Think in phases: understand → identify smells → propose steps → estimate risk.]],
-            },
-            {
-              role = 'user',
-              content = '',
-            },
-          },
-        },
       },
-      -- MCP (Model Context Protocol) Servers
-      -- MCP lets LLMs call external tool servers via JSON-RPC over stdio.
-      -- These add capabilities that built-in tools don't have.
-      -- Use /mcp in a chat buffer to toggle servers on/off.
       mcp = {
         servers = {
-          -- Live, up-to-date documentation for libraries/frameworks.
-          -- Instead of relying on stale training data, the AI fetches
-          -- current docs from the source. No API key needed.
-          -- https://github.com/upstash/context7
           ['context7'] = {
             cmd = { 'npx', '-y', '@upstash/context7-mcp@latest' },
           },
-          -- Structured step-by-step reasoning with revision and branching.
-          -- Forces the AI to break complex problems into explicit steps
-          -- instead of jumping to conclusions. No API key needed.
-          -- https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking
           ['sequential-thinking'] = {
             cmd = { 'npx', '-y', '@modelcontextprotocol/server-sequential-thinking' },
           },
-          -- PDF reader — extracts text and metadata from PDF files.
-          -- Lets the AI read books, papers, and documents directly.
-          -- https://github.com/github/pdf-reader-mcp
           ['pdf-reader'] = {
             cmd = { 'uvx', 'pdf-reader-mcp' },
           },
-          -- Git operations (status, diff, log, commit, branch, etc.) on local repos.
-          -- No GitHub/GitLab — pure Git. Pass the repo path as the first argument,
-          -- or omit it to default to the current working directory.
-          -- https://github.com/modelcontextprotocol/servers/tree/main/src/git
           ['git'] = {
             cmd = { 'uvx', 'mcp-server-git' },
           },
-          -- Repomix — packs a repository (or subset of files) into a single
-          -- AI-friendly text file (XML/plain/markdown). Useful for giving the
-          -- AI full codebase context in one shot.
-          -- Run on-demand via `/mcp` in chat; no API key needed.
-          -- https://github.com/yamadashy/repomix
           ['repomix'] = {
             cmd = { 'npx', '-y', 'repomix', '--mcp' },
           },
-          -- Persistent memory as a knowledge graph.
-          -- The AI can store entities, relations and observations
-          -- that survive across conversations. Data lives in a local JSON file.
-          -- Works with any adapter (Copilot, Gemini, etc.) — it's an external
-          -- MCP server, not the Anthropic-specific built-in memory tool.
-          -- https://github.com/modelcontextprotocol/servers/tree/main/src/memory
           ['memory'] = {
             cmd = { 'npx', '-y', '@modelcontextprotocol/server-memory' },
             env = {
@@ -296,33 +196,24 @@ Think in phases: understand → identify smells → propose steps → estimate r
           },
         },
         opts = {
-          -- Servers listed here auto-start when CodeCompanion loads.
-          -- Remove a name to make it on-demand only (toggle with /mcp in chat).
-          default_servers = { 'context7', 'memory' },
+          default_servers = {},
         },
       },
       display = {
         chat = {
           show_token_count = true,
-          render_headers = true, -- Mostra headers das respostas
+          render_headers = true,
         },
       },
       extensions = {
         history = {
           enabled = true,
           opts = {
-            -- Keymap to open history from chat buffer
             keymap = 'gh',
-            -- Keymap to save the current chat manually
             save_chat_keymap = 'gW',
-            -- Save directory
             dir_to_save = vim.fn.stdpath 'data' .. '/codecompanion-history',
-            -- Picker: 'telescope' | 'snacks' | 'fzf_lua' | 'mini_pick' | 'default'
             picker = 'default',
             summary = {
-              -- NOTE: avoid 'gcs'/'gbs' — 'gc' and 'gb' are prefixes of existing keymaps
-              -- ('gc' = codeblock, 'gba'/'gbd' = buffer sync), causing input delay.
-              -- 'gz' is unused by codecompanion, making it a safe prefix.
               create_summary_keymap = 'gzs',
               browse_summaries_keymap = 'gzb',
             },
