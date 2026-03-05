@@ -56,7 +56,7 @@ return {
       },
       interactions = {
         chat = {
-          adapter = 'claude_code',
+          adapter = 'copilot',
           opts = {
             stream = true,
             max_tokens = 4096,
@@ -78,7 +78,7 @@ return {
           },
         },
         inline = {
-          adapter = 'claude_code',
+          adapter = 'copilot',
         },
       },
       prompt_library = {
