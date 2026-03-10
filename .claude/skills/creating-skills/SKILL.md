@@ -150,6 +150,7 @@ Fix GitHub issue $ARGUMENTS following our coding standards.
 ```
 
 Access individual arguments: `$ARGUMENTS[0]` or shorthand `$0`, `$1`, `$2`.
+> **Note:** indexed access (`$0`, `$1`) may not be supported by all runtimes — confirm support before relying on it. `$ARGUMENTS` (full string) is universally supported.
 
 ## Additional Resources
 

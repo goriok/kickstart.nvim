@@ -3,8 +3,7 @@
 
 return {
   '$AUTHOR/$PLUGIN_NAME.nvim',
-  dependencies = {},
-  event = 'VeryLazy', -- or: 'BufReadPre', 'InsertEnter', etc.
+  -- event = 'VeryLazy', -- uncomment and adjust: 'BufReadPre', 'InsertEnter', etc.
   config = function()
     require('$PLUGIN_NAME').setup {}
   end,

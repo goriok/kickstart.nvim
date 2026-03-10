@@ -1,17 +1,23 @@
 -- MCP Server Entry Template
 -- Add inside mcp.servers table in lua/custom/plugins/codecompanion.lua
+-- Each block below is a standalone snippet — pick the one that fits.
 
--- Node (npx) server:
+-- snippet: Node (npx) server
+--[[
 ['$SERVER_NAME'] = {
   cmd = { 'npx', '-y', '$NPM_PACKAGE@latest' },
 },
+]]
 
--- Python (uvx) server:
+-- snippet: Python (uvx) server
+--[[
 ['$SERVER_NAME'] = {
   cmd = { 'uvx', '$PIP_PACKAGE' },
 },
+]]
 
--- Server with environment variables:
+-- snippet: Server with environment variables
+--[[
 ['$SERVER_NAME'] = {
   cmd = { 'npx', '-y', '$NPM_PACKAGE@latest' },
   env = {
@@ -19,3 +25,4 @@
     DATA_PATH = vim.fn.stdpath('data') .. '/mcp/$SERVER_NAME/data.json',
   },
 },
+]]

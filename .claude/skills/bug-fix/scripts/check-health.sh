@@ -16,24 +16,31 @@ fi
 echo "Neovim version: $(nvim --version | head -1)"
 echo ""
 
-# Run checkhealth for common modules
-echo "--- Running checkhealth ---"
-nvim --headless -c "checkhealth vim.lsp" -c "qa!" 2>&1 || true
+# Print loaded config path
+echo "--- Config path ---"
+nvim --headless -c "lua io.write(vim.fn.stdpath('config') .. '\n')" -c "qa!" 2>/dev/null || true
 echo ""
 
 # Check for lua syntax errors in config
 echo "--- Checking Lua syntax ---"
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 errors=0
-for f in $(find "$config_dir/lua" -name "*.lua" 2>/dev/null); do
-  if ! luac -p "$f" 2>/dev/null; then
-    echo "❌ Syntax error: $f"
-    errors=$((errors + 1))
-  fi
-done
 
-if [ "$errors" -eq 0 ]; then
-  echo "✅ All Lua files parse correctly"
+if ! command -v luac &>/dev/null; then
+  echo "⚠️  luac not found — skipping Lua syntax check"
+else
+  while IFS= read -r f; do
+    if ! luac -p "$f" 2>/dev/null; then
+      echo "❌ Syntax error: $f"
+      errors=$((errors + 1))
+    fi
+  done < <(find "$config_dir/lua" -name "*.lua" 2>/dev/null)
+
+  if [ "$errors" -eq 0 ]; then
+    echo "✅ All Lua files parse correctly"
+  else
+    echo "❌ $errors file(s) with syntax errors"
+  fi
 fi
 
 echo ""

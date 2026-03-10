@@ -1,3 +1,4 @@
+<!-- $BRANCH: run `git rev-parse --abbrev-ref HEAD`, or use "working tree" for unstaged changes -->
 ## Code Review — $BRANCH
 
 ### `path/to/file.lua`
