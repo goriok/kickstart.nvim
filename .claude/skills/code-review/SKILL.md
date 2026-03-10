@@ -22,7 +22,7 @@ Activate when the user:
 4. Analyse by category        →  see Review Categories below
 5. Report findings            →  use severity format below
 6. Propose fixes inline       →  use insert_edit_into_file for blockers
-7. get_diagnostics            →  run on every changed file
+7. get_diagnostics            →  run on every changed code file (skip `.md`, `.json`, `.yaml` and other non-code files)
 ```
 
 If the user specifies scope (`staged` / `unstaged`), filter accordingly.
@@ -82,7 +82,7 @@ Always verify these automatically:
 
 - Propose fixes only for 🔴 BLOCKER and 🟡 WARNING findings
 - Use `insert_edit_into_file` to apply fixes when the user confirms
-- Never silently rewrite large blocks — show the diff and ask first for changes > 10 lines
+- Never silently rewrite large blocks — show the diff and ask first for changes that affect logic, interfaces or public APIs
 - Preserve the author's intent; do not refactor unrelated code
 
 ## Output Format
