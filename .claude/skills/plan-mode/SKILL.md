@@ -22,7 +22,8 @@ Do **not** enter plan mode for simple factual questions, quick fixes, or single-
 1. **Do not write or edit any files** during plan mode — only analyse and propose
 2. **Do not run commands** that mutate state
 3. State explicitly at the top: `📋 **Plan Mode** — no files will be changed until you approve.`
-4. End every plan with: `✅ Ready to implement. Reply "go" or describe any changes to the plan.`
+4. **Generate a plan file** — save the plan as a `.md` file (see [Plan File](#plan-file) section)
+5. End every plan with: `✅ Plan saved to <path>. Reply "go" or describe any changes.`
 
 ## Required Plan Structure
 
@@ -54,6 +55,53 @@ Numbered list of implementation steps. For non-trivial logic, include pseudocode
 
 ### 4. Open Questions (optional)
 List any ambiguities or decisions the user should resolve before implementation begins.
+
+## Plan File
+
+### Location
+
+Save the plan file to `docs/plans/` relative to the project root:
+
+```
+docs/plans/<slug>.md
+```
+
+- `<slug>` is a `kebab-case` summary of the goal (max 5 words), e.g. `add-git-blame-inline.md`
+- Always create the `docs/plans/` directory if it does not exist
+- Never overwrite an existing plan file — append a numeric suffix: `add-git-blame-inline-2.md`
+
+### Plan File Content
+
+The file must mirror the chat response exactly, using this template:
+
+```markdown
+# Plan: <Goal>
+
+> Created: <YYYY-MM-DD>
+
+## Goal
+<one sentence>
+
+## Affected Files
+| Action | File | Reason |
+|--------|------|--------|
+| ...    | ...  | ...    |
+
+## Steps
+1. ...
+2. ...
+
+## Open Questions
+- ...
+
+## Status
+- [ ] Approved
+- [ ] In progress
+- [ ] Done
+```
+
+- `Status` checkboxes allow the user to track progress after approval
+- Add `docs/plans/` to `.gitignore` only if the user explicitly requests it; otherwise commit the file
 
 ## Rules
 
@@ -87,4 +135,4 @@ Response:
 > 4. Update README keymaps table
 > ```
 >
-> ✅ Ready to implement. Reply "go" or describe any changes to the plan.
+> ✅ Plan saved to `docs/plans/add-git-blame-inline.md`. Reply "go" or describe any changes.
