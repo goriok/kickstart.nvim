@@ -12,13 +12,9 @@ return {
       callback = function(ev)
         local chat = require('codecompanion').buf_get_chat(ev.data.bufnr)
         if not chat then return end
-        if chat.adapter and chat.adapter.name == 'copilot' then
-          chat.tool_registry:add_group 'agent'
-        end
+        if chat.adapter and chat.adapter.name == 'copilot' then chat.tool_registry:add_group 'agent' end
         -- Inject Agent Skills (Level 1 index + Level 2 glob-matched bodies)
-        if chat.adapter and chat.adapter.name ~= 'ollama' then
-          require('custom.agent_skills').inject_matching_skills(chat)
-        end
+        if chat.adapter and chat.adapter.name ~= 'ollama' then require('custom.agent_skills').inject_matching_skills(chat) end
       end,
     })
 
@@ -94,9 +90,7 @@ return {
           copilot = function()
             return require('codecompanion.adapters').extend('copilot', {
               schema = {
-                model = {
-                  default = 'claude-haiku-4-5-20251001',
-                },
+                model = {},
               },
             })
           end,
