@@ -40,7 +40,7 @@ Evaluate changes across these dimensions in order:
 | 4 | **Style & Conventions** | Naming, indentation, `local` usage, self-contained configs |
 | 5 | **Performance** | Unnecessary loops, blocking calls in hot paths |
 | 6 | **Maintainability** | Magic numbers, missing comments on non-obvious logic |
-| 7 | **Tests** | New behaviour without tests, broken existing tests |
+| 7 | **Tests** | New behaviour without tests, broken existing tests (if a test suite exists — check for `tests/`, `spec/` directories) |
 
 ## Severity Format
 
@@ -66,8 +66,14 @@ Always verify these automatically:
 - [ ] No plugin removed without checking it is not a dependency in `lua/custom/plugins/`
 - [ ] `lazy-lock.json` not modified directly
 - [ ] No hardcoded paths — must use `vim.fn.stdpath('data')` / `vim.fn.stdpath('config')`
-- [ ] No push to remote triggered by the agent
 - [ ] Commit message follows Conventional Commits format (no scope in parentheses)
+
+## Agent Constraints
+
+These apply to the agent at all times, independent of the diff:
+
+- Never push to remote without explicit user approval
+- Never apply fixes silently — always report findings first
 
 ## Lua / Neovim Specific Checks
 
@@ -88,7 +94,7 @@ Always verify these automatically:
 ## Output Format
 
 ```
-## Code Review — <branch or "working tree">
+## Code Review — <run `git rev-parse --abbrev-ref HEAD` for branch name, or "working tree" if reviewing unstaged changes>
 
 ### `path/to/file.lua`
 🔴 BLOCKER — <line or context>: <description>
