@@ -23,7 +23,7 @@ globs: ["**/*"]
 | `feat`     | New feature or capability                           |
 | `fix`      | Bug fix                                             |
 | `chore`    | Maintenance, deps, tooling (no production code)     |
-| `docs`     | Documentation only                                  |
+| `docs`     | Documentation only (but not for new agent skills)   |
 | `refactor` | Code change that neither fixes a bug nor adds a feature |
 | `style`    | Formatting, whitespace, missing semicolons          |
 | `perf`     | Performance improvement                             |
@@ -70,6 +70,12 @@ feat!: migrate keymaps to vim.keymap.set API
 ```
 
 Or add a `BREAKING CHANGE:` footer in the body.
+
+## Special Cases
+
+**Creating a new agent skill** → use `feat:` not `docs:`
+- Agent skills are functionality extensions, not just documentation
+- Example: `feat: add plan-mode skill for architectural planning`
 
 ## Rules
 
