@@ -14,7 +14,8 @@ return {
         if not chat then return end
         if chat.adapter and chat.adapter.name == 'copilot' then chat.tool_registry:add_group 'agent' end
         -- Inject Agent Skills (Level 1 index + Level 2 glob-matched bodies)
-        if chat.adapter and chat.adapter.name ~= 'ollama' then require('custom.agent_skills').inject_matching_skills(chat) end
+        local skip_skill_injection = { ollama = true, claude_code = true }
+        if chat.adapter and not skip_skill_injection[chat.adapter.name] then require('custom.agent_skills').inject_matching_skills(chat) end
       end,
     })
 
