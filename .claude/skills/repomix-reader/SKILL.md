@@ -1,4 +1,5 @@
 ---
+name: repomix-reader
 description: Guidelines for reading and consuming a repomix XML file as the primary context source. Apply when the user explicitly references a repomix file by name or uses phrases like "leia o repomix", "use o repomix como contexto", "baseado no repomix", "read the repomix", "use repomix as context".
 globs: ["**/*"]
 ---

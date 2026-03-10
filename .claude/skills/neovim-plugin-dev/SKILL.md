@@ -1,4 +1,5 @@
 ---
+name: neovim-plugin-dev
 description: Guidelines and patterns for developing and configuring Neovim plugins in this Lua-based setup.
 globs: ["lua/custom/plugins/*.lua", "lua/kickstart/plugins/*.lua"]
 ---
@@ -14,16 +15,7 @@ globs: ["lua/custom/plugins/*.lua", "lua/kickstart/plugins/*.lua"]
 
 ## Config Structure
 
-```lua
-return {
-  'author/plugin.nvim',
-  dependencies = { ... },
-  config = function()
-    require('plugin').setup { ... }
-  end,
-  keys = { ... },
-}
-```
+See [templates/plugin-config.lua](templates/plugin-config.lua) for the standard plugin spec template.
 
 ## Keymap Conventions
 

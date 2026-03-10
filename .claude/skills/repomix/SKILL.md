@@ -1,5 +1,7 @@
 ---
+name: repomix
 description: Guidelines for generating a repomix XML output. Apply when the user asks to run repomix, generate a codebase context file, or export the project for AI consumption.
+disable-model-invocation: true
 globs: ["**/*"]
 ---
 
@@ -29,165 +31,27 @@ Output file: `repomix-output.xml` (default, unless overridden in config).
 
 Use the presence of key files to infer the primary language/stack:
 
-| Indicator file(s)             | Stack         |
-|-------------------------------|---------------|
-| `*.lua`, `init.lua`           | Lua / Neovim  |
-| `go.mod`                      | Go            |
-| `package.json`                | JavaScript/TS |
-| `Gemfile`                     | Ruby          |
-| `pyproject.toml`, `setup.py`  | Python        |
-| `Cargo.toml`                  | Rust          |
-| `pom.xml`, `build.gradle`     | Java          |
+| Indicator file(s)             | Stack         | Template                          |
+|-------------------------------|---------------|-----------------------------------|
+| `*.lua`, `init.lua`           | Lua / Neovim  | `templates/lua-neovim.json`       |
+| `go.mod`                      | Go            | `templates/go.json`               |
+| `package.json`                | JavaScript/TS | `templates/javascript-typescript.json` |
+| `Gemfile`                     | Ruby          | `templates/ruby.json`             |
+| `pyproject.toml`, `setup.py`  | Python        | `templates/python.json`           |
+| (fallback)                    | Generic       | `templates/generic.json`          |
 
 If multiple indicators exist, prefer the one with the most source files.
 
-## Default `repomix.config.json` Templates
+## Supporting Files
 
-### Lua / Neovim
-
-```json
-{
-  "output": {
-    "filePath": "repomix-output.xml",
-    "style": "xml",
-    "compress": true,
-    "removeEmptyLines": true
-  },
-  "ignore": {
-    "useGitignore": true,
-    "useDefaultPatterns": true,
-    "customPatterns": [
-      "repomix-output.xml",
-      "lazy-lock.json",
-      ".git/**"
-    ]
-  }
-}
-```
-
-### Go
-
-```json
-{
-  "output": {
-    "filePath": "repomix-output.xml",
-    "style": "xml",
-    "compress": true,
-    "removeEmptyLines": true
-  },
-  "ignore": {
-    "useGitignore": true,
-    "useDefaultPatterns": true,
-    "customPatterns": [
-      "repomix-output.xml",
-      "vendor/**",
-      "*.sum",
-      ".git/**"
-    ]
-  }
-}
-```
-
-### JavaScript / TypeScript
-
-```json
-{
-  "output": {
-    "filePath": "repomix-output.xml",
-    "style": "xml",
-    "compress": true,
-    "removeEmptyLines": true
-  },
-  "ignore": {
-    "useGitignore": true,
-    "useDefaultPatterns": true,
-    "customPatterns": [
-      "repomix-output.xml",
-      "node_modules/**",
-      "dist/**",
-      "build/**",
-      ".git/**"
-    ]
-  }
-}
-```
-
-### Ruby
-
-```json
-{
-  "output": {
-    "filePath": "repomix-output.xml",
-    "style": "xml",
-    "compress": true,
-    "removeEmptyLines": true
-  },
-  "ignore": {
-    "useGitignore": true,
-    "useDefaultPatterns": true,
-    "customPatterns": [
-      "repomix-output.xml",
-      "vendor/bundle/**",
-      "tmp/**",
-      "log/**",
-      ".git/**"
-    ]
-  }
-}
-```
-
-### Python
-
-```json
-{
-  "output": {
-    "filePath": "repomix-output.xml",
-    "style": "xml",
-    "compress": true,
-    "removeEmptyLines": true
-  },
-  "ignore": {
-    "useGitignore": true,
-    "useDefaultPatterns": true,
-    "customPatterns": [
-      "repomix-output.xml",
-      "__pycache__/**",
-      "*.pyc",
-      ".venv/**",
-      "dist/**",
-      ".git/**"
-    ]
-  }
-}
-```
-
-### Generic (fallback)
-
-```json
-{
-  "output": {
-    "filePath": "repomix-output.xml",
-    "style": "xml",
-    "compress": true,
-    "removeEmptyLines": true
-  },
-  "ignore": {
-    "useGitignore": true,
-    "useDefaultPatterns": true,
-    "customPatterns": [
-      "repomix-output.xml",
-      ".git/**"
-    ]
-  }
-}
-```
+- Config templates per language are in [templates/](templates/) — copy the matching JSON as `repomix.config.json`
 
 ## Step-by-Step Procedure
 
 1. Run `ls repomix.config.json 2>/dev/null` (or check via tool) to test existence.
 2. If **missing**:
    a. Detect stack from indicator files.
-   b. Write the matching template above to `repomix.config.json`.
+   b. Copy the matching template from `templates/` to `repomix.config.json`.
    c. Inform the user which template was applied.
 3. Run: `repomix --compress --remove-empty-lines`
 4. Confirm the output file path to the user (default: `repomix-output.xml`).

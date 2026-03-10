@@ -1,4 +1,5 @@
 ---
+name: bug-fix
 description: Guidelines for diagnosing and fixing bugs during feature implementation. Apply when the user reports an error, unexpected behaviour, test failure, or asks to fix/debug code.
 globs: ["**/*"]
 ---
@@ -62,6 +63,10 @@ After every fix, verify:
 - If multiple issues were found, list them briefly before addressing each
 - If the fix required a trade-off or assumption, call it out explicitly
 - If 3 iterations failed, summarise what was tried and ask the user for more context
+
+## Scripts
+
+- For a quick health check on the Neovim config, run [scripts/check-health.sh](scripts/check-health.sh)
 
 ## Anti-patterns
 

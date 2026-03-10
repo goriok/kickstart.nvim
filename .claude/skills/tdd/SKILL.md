@@ -1,4 +1,5 @@
 ---
+name: tdd
 description: Guidelines for Test Driven Development. Apply when the user asks to implement a feature or fix a bug using TDD, or mentions "test first", "red green refactor", or "write tests".
 globs: ["**/*"]
 ---
@@ -68,13 +69,13 @@ Repeat steps 1–10 for each new behaviour.
 
 ## Test File Conventions
 
-| Language | Test framework | Test location | Naming pattern |
-|----------|---------------|---------------|----------------|
-| Lua | `busted` / `plenary.busted` | `tests/` or `spec/` | `*_spec.lua` |
-| Python | `pytest` | `tests/` | `test_*.py` |
-| Go | `testing` | same package | `*_test.go` |
-| Ruby | `rspec` | `spec/` | `*_spec.rb` |
-| JS/TS | `vitest` / `jest` | `__tests__/` or colocated | `*.test.{js,ts}` |
+| Language | Test framework | Test location | Naming pattern | Template |
+|----------|---------------|---------------|----------------|----------|
+| Lua | `busted` / `plenary.busted` | `tests/` or `spec/` | `*_spec.lua` | [templates/lua-spec.lua](templates/lua-spec.lua) |
+| Python | `pytest` | `tests/` | `test_*.py` | [templates/python-test.py](templates/python-test.py) |
+| Go | `testing` | same package | `*_test.go` | [templates/go-test.go](templates/go-test.go) |
+| Ruby | `rspec` | `spec/` | `*_spec.rb` | — |
+| JS/TS | `vitest` / `jest` | `__tests__/` or colocated | `*.test.{js,ts}` | — |
 
 If the project already has tests, **follow the existing convention** — check for test directories and patterns before creating new files.
 

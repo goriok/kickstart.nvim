@@ -1,4 +1,5 @@
 ---
+name: codecompanion-mcp
 description: Guidelines for adding and configuring MCP servers in the codecompanion.nvim setup. Apply when adding, editing, or removing MCP servers from the codecompanion config.
 globs: ["lua/custom/plugins/codecompanion.lua"]
 ---
@@ -22,15 +23,7 @@ mcp = {
 
 ## Server Entry Structure
 
-```lua
-['server-name'] = {
-  cmd = { 'npx', '-y', '<npm-package>' },   -- or 'uvx' for Python-based
-  env = {                                    -- optional: only when needed
-    SOME_VAR = vim.env.SOME_VAR,             -- read from environment
-    FILE_PATH = vim.fn.stdpath 'data' .. '/subdir/file.json',  -- dynamic path
-  },
-},
-```
+See [templates/server-entry.lua](templates/server-entry.lua) for the standard entry patterns (npx, uvx, with env vars).
 
 ## Command Patterns
 

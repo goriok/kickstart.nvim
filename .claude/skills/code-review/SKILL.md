@@ -1,5 +1,8 @@
 ---
+name: code-review
 description: Guidelines for performing code reviews on changed files. Apply when the user asks to "review", "code review", "revisar", "check my changes", or "what did I change".
+disable-model-invocation: true
+allowed-tools: Read, Grep, Glob
 globs: ["**/*"]
 ---
 
@@ -93,26 +96,7 @@ These apply to the agent at all times, independent of the diff:
 
 ## Output Format
 
-```
-## Code Review — <run `git rev-parse --abbrev-ref HEAD` for branch name, or "working tree" if reviewing unstaged changes>
-
-### `path/to/file.lua`
-🔴 BLOCKER — <line or context>: <description>
-   Fix: <one-line suggestion or inline edit>
-
-🟡 WARNING — <line or context>: <description>
-
-🟢 SUGGESTION — <description>
-
----
-
-### `path/to/other.lua`
-ℹ️  INFO — no issues found
-
----
-
-**Summary**: 1 blocker, 1 warning, 1 suggestion — needs fixes
-```
+Use the template in [template.md](template.md) for the review output structure.
 
 ## Anti-patterns
 

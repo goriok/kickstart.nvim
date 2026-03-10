@@ -1,5 +1,7 @@
 ---
+name: plan-mode
 description: Guidelines for entering plan mode in codecompanion chat or agent sessions. Apply when the user asks to plan, design, architect, or structure a feature before implementation.
+disable-model-invocation: true
 globs: ["**/*"]
 ---
 
@@ -72,33 +74,8 @@ docs/plans/<slug>.md
 
 ### Plan File Content
 
-The file must mirror the chat response exactly, using this template:
-
-```markdown
-# Plan: <Goal>
-
-> Created: <YYYY-MM-DD>
-
-## Goal
-<one sentence>
-
-## Affected Files
-| Action | File | Reason |
-|--------|------|--------|
-| ...    | ...  | ...    |
-
-## Steps
-1. ...
-2. ...
-
-## Open Questions
-- ...
-
-## Status
-- [ ] Approved
-- [ ] In progress
-- [ ] Done
-```
+Use the template in [template.md](template.md) as the base structure.
+The file must mirror the chat response exactly.
 
 - `Status` checkboxes allow the user to track progress after approval
 - Add `docs/plans/` to `.gitignore` only if the user explicitly requests it; otherwise commit the file

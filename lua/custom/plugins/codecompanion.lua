@@ -32,6 +32,13 @@ return {
           chat:remove_tagged_message 'rules'
           chat:remove_tagged_message 'system_prompt_from_config'
           chat:remove_tagged_message 'agent_skills'
+          -- Remove any individually invoked skills via /skill
+          chat.messages = vim
+            .iter(chat.messages)
+            :filter(function(msg)
+              return not (msg._meta and msg._meta.tag == 'agent_skill_invoked')
+            end)
+            :totable()
           chat.tool_registry:remove_group 'agent'
           -- Remove rules context items (AGENTS.md, CLAUDE.md) from the context panel
           local rules_ids = {}
@@ -133,19 +140,15 @@ return {
           },
           tools = {
             groups = {
-              ['agent'] = {
-                tools = {
-                  'ask_questions',
-                  'create_file',
-                  'delete_file',
-                  'file_search',
-                  'get_changed_files',
-                  'get_diagnostics',
-                  'grep_search',
-                  'insert_edit_into_file',
-                  'read_file',
-                  'run_command',
-                },
+              ['agent'] = {},
+            },
+          },
+          slash_commands = {
+            ['skill'] = {
+              path = 'custom.slash_commands.skill',
+              description = 'Load an agent skill with optional arguments',
+              opts = {
+                contains_code = false,
               },
             },
           },
@@ -208,6 +211,9 @@ return {
           ['repomix'] = {
             cmd = { 'npx', '-y', 'repomix', '--mcp' },
           },
+          ['fetch'] = {
+            cmd = { 'uvx', 'mcp-server-fetch' },
+          },
           ['memory'] = {
             cmd = { 'npx', '-y', '@modelcontextprotocol/server-memory' },
             env = {
@@ -216,7 +222,7 @@ return {
           },
         },
         opts = {
-          default_servers = {},
+          default_servers = { 'fetch' },
         },
       },
       display = {

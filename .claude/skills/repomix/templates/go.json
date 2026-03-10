@@ -1,0 +1,18 @@
+{
+  "output": {
+    "filePath": "repomix-output.xml",
+    "style": "xml",
+    "compress": true,
+    "removeEmptyLines": true
+  },
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "repomix-output.xml",
+      "vendor/**",
+      "*.sum",
+      ".git/**"
+    ]
+  }
+}
