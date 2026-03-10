@@ -12,7 +12,7 @@ Neovim configuration based on [kickstart.nvim](https://github.com/nvim-lua/kicks
 ## Conventions
 
 - Use `local` variables; keep plugin configs self-contained
-- Commit style: [Conventional Commits](https://www.conventionalcommits.org/) — `feat(scope):`, `fix:`, `chore:`, `docs:`
+- Commit style: [Conventional Commits](https://www.conventionalcommits.org/) — `feat:`, `fix:`, `chore:`, `docs:` (no scope in parentheses)
 - Update `AGENTS.md` on structural changes; update `README.md` on config/plugin/keymap changes
 
 ## AI Tooling

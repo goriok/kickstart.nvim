@@ -11,7 +11,14 @@ return {
       pattern = 'CodeCompanionChatCreated',
       callback = function(ev)
         local chat = require('codecompanion').buf_get_chat(ev.data.bufnr)
-        if chat and chat.adapter and chat.adapter.name == 'copilot' then chat.tool_registry:add_group 'agent' end
+        if not chat then return end
+        if chat.adapter and chat.adapter.name == 'copilot' then
+          chat.tool_registry:add_group 'agent'
+        end
+        -- Inject Agent Skills (Level 1 index + Level 2 glob-matched bodies)
+        if chat.adapter and chat.adapter.name ~= 'ollama' then
+          require('custom.agent_skills').inject_matching_skills(chat)
+        end
       end,
     })
 
@@ -28,6 +35,7 @@ return {
         if adapter.name == 'ollama' then
           chat:remove_tagged_message 'rules'
           chat:remove_tagged_message 'system_prompt_from_config'
+          chat:remove_tagged_message 'agent_skills'
           chat.tool_registry:remove_group 'agent'
           -- Remove rules context items (AGENTS.md, CLAUDE.md) from the context panel
           local rules_ids = {}
@@ -128,6 +136,24 @@ return {
               if model then return adapter.formatted_name .. ' (' .. model .. ')' end
               return adapter.formatted_name
             end,
+          },
+          tools = {
+            groups = {
+              ['agent'] = {
+                tools = {
+                  'ask_questions',
+                  'create_file',
+                  'delete_file',
+                  'file_search',
+                  'get_changed_files',
+                  'get_diagnostics',
+                  'grep_search',
+                  'insert_edit_into_file',
+                  'read_file',
+                  'run_command',
+                },
+              },
+            },
           },
         },
         agent = {
