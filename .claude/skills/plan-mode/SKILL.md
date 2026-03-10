@@ -23,7 +23,7 @@ Do **not** enter plan mode for simple factual questions, quick fixes, or single-
 2. **Do not run commands** that mutate state
 3. State explicitly at the top: `📋 **Plan Mode** — no files will be changed until you approve.`
 4. **Generate a plan file** — save the plan as a `.md` file (see [Plan File](#plan-file) section)
-5. End every plan with: `✅ Plan saved to <path>. Reply "go" or describe any changes.`
+5. End every plan with: `✅ Plan saved to <path>. Reply "execute" or describe any changes.`
 
 ## Required Plan Structure
 
@@ -135,4 +135,4 @@ Response:
 > 4. Update README keymaps table
 > ```
 >
-> ✅ Plan saved to `docs/plans/add-git-blame-inline.md`. Reply "go" or describe any changes.
+> ✅ Plan saved to `docs/plans/add-git-blame-inline.md`. Reply "execute" or describe any changes.
