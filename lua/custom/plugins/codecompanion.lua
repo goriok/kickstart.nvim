@@ -13,9 +13,21 @@ return {
         local chat = require('codecompanion').buf_get_chat(ev.data.bufnr)
         if not chat then return end
         if chat.adapter and chat.adapter.name == 'copilot' then chat.tool_registry:add_group 'agent' end
-        -- Inject Agent Skills (Level 1 index + Level 2 glob-matched bodies)
+        -- Inject Agent Skills Level 1 index only (lazy body loading happens on_before_submit)
         local skip_skill_injection = { ollama = true, claude_code = true }
-        if chat.adapter and not skip_skill_injection[chat.adapter.name] then require('custom.agent_skills').inject_matching_skills(chat) end
+        if chat.adapter and not skip_skill_injection[chat.adapter.name] then
+          require('custom.agent_skills').inject_matching_skills(chat)
+          -- Estratégia 5: register on_before_submit to inject Level 2 bodies per message
+          chat:add_callback('on_before_submit', function(c)
+            local skip = { ollama = true, claude_code = true }
+            if c.adapter and skip[c.adapter.name] then return end
+            local parser = require 'codecompanion.interactions.chat.parser'
+            local pending = parser.messages(c, c.header_line)
+            if pending and pending.content and pending.content ~= '' then
+              require('custom.agent_skills').inject_skills_for_message(c, pending.content)
+            end
+          end)
+        end
       end,
     })
 
@@ -33,6 +45,7 @@ return {
           chat:remove_tagged_message 'rules'
           chat:remove_tagged_message 'system_prompt_from_config'
           chat:remove_tagged_message 'agent_skills'
+          chat:remove_tagged_message 'agent_skills_body'
           -- Remove any individually invoked skills via /skill
           chat.messages = vim
             .iter(chat.messages)

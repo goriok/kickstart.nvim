@@ -535,8 +535,19 @@ function M.inject_skills(chat, opts)
   )
 end
 
---- Auto-inject all skills whose globs match (for use without user message context)
---- This loads skills based purely on glob patterns vs current buffers
+--- Check if a system message with this exact content is already present (dedup guard)
+---@param chat table
+---@param content string
+---@param tag string
+---@return boolean
+local function already_injected(chat, content, tag)
+  return vim.iter(chat.messages):any(function(msg)
+    return msg._meta and msg._meta.tag == tag and msg.content == content
+  end)
+end
+
+--- Auto-inject index only (Level 1) on chat creation.
+--- Skill bodies (Level 2) are injected lazily via inject_skills_for_message().
 ---@param chat table
 function M.inject_matching_skills(chat)
   local config = require('codecompanion.config')
@@ -546,47 +557,78 @@ function M.inject_matching_skills(chat)
     return
   end
 
-  -- Gather attached file paths from the chat
-  local buffers = {}
-  if chat.context_items then
-    for _, item in ipairs(chat.context_items) do
-      local path = item.path or item.filename or ''
-      if path ~= '' then
-        table.insert(buffers, path)
-      end
-    end
-  end
-  -- Also add the current buffer
-  local cur_buf = vim.api.nvim_buf_get_name(0)
-  if cur_buf ~= '' then
-    table.insert(buffers, cur_buf)
+  local index = build_index(skills)
+  if index == '' then
+    return
   end
 
+  -- Estratégia 6: dedup — skip if identical index already present
+  if already_injected(chat, index, 'agent_skills') then
+    return
+  end
+
+  -- Remove any previous index message before re-injecting
+  chat.messages = vim
+    .iter(chat.messages)
+    :filter(function(msg)
+      return not (msg._meta and msg._meta.tag == 'agent_skills')
+    end)
+    :totable()
+
+  -- Inject Level 1 index only — bodies are loaded lazily per message
+  chat:add_message(
+    { role = config.constants.SYSTEM_ROLE, content = index },
+    { visible = false, _meta = { tag = 'agent_skills' } }
+  )
+end
+
+--- Inject skill bodies (Level 2) relevant to a specific user message.
+--- Called from on_before_submit with the pending message content.
+--- Estratégia 5: message-driven lazy body injection.
+---@param chat table
+---@param message string The user message about to be submitted
+function M.inject_skills_for_message(chat, message)
+  if not message or message == '' then
+    return
+  end
+
+  local config = require('codecompanion.config')
+  local skills = discover_skills()
+
+  if #skills == 0 then
+    return
+  end
+
+  -- Find skills relevant to this message (name match only — no glob at submit time)
   local relevant = {}
   for _, skill in ipairs(skills) do
-    -- Skip skills that should not be auto-invoked by the model
-    if not skill.disable_model_invocation and #skill.globs > 0 and is_skill_relevant(skill, { buffers = buffers }) then
+    if not skill.disable_model_invocation and is_skill_relevant(skill, { message = message }) then
       table.insert(relevant, skill)
     end
   end
 
-  if #relevant == 0 and #skills > 0 then
-    -- Only inject the lightweight index
-    local index = build_index(skills)
-    chat:add_message(
-      { role = config.constants.SYSTEM_ROLE, content = index },
-      { visible = false, _meta = { tag = 'agent_skills' } }
-    )
+  if #relevant == 0 then
     return
   end
 
-  -- Inject index + matched skill bodies
-  local index = build_index(skills)
   local content = build_skill_content(relevant)
 
+  -- Estratégia 6: dedup — skip if this exact body block is already present
+  if already_injected(chat, content, 'agent_skills_body') then
+    return
+  end
+
+  -- Remove previous body injection (replace with fresh one for this message)
+  chat.messages = vim
+    .iter(chat.messages)
+    :filter(function(msg)
+      return not (msg._meta and msg._meta.tag == 'agent_skills_body')
+    end)
+    :totable()
+
   chat:add_message(
-    { role = config.constants.SYSTEM_ROLE, content = index .. content },
-    { visible = false, _meta = { tag = 'agent_skills' } }
+    { role = config.constants.SYSTEM_ROLE, content = content },
+    { visible = false, _meta = { tag = 'agent_skills_body' } }
   )
 end
 
