@@ -283,18 +283,8 @@ require('lazy').setup({
   -- options to `gitsigns.nvim`.
   --
   -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
-  },
+  -- NOTE: gitsigns is fully configured (signs + keymaps) in lua/kickstart/plugins/gitsigns.lua
+  { 'lewis6991/gitsigns.nvim' },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -672,22 +662,13 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'lua-language-server', -- Lua Language server
         'stylua', -- Used to format Lua code
-        'pyright',
         'ruff',
-        'gopls',
         'goimports',
         'gofumpt',
-        'marksman',
-        'yaml-language-server',
-        -- 'jsonls',
         'prettierd',
         'markdownlint',
-        -- 'jsonlint',
         'rubocop', -- Ruby linter/formatter
-        'ruby-lsp', -- Ruby language server
-        'typescript-language-server', -- JS/TS language server
         'eslint-lsp', -- ESLint language server
-        'prettierd', -- JS/TS/CSS/HTML formatter (already listed above, Mason deduplicates)
         -- You can add other tools here that you want Mason to install
       })
 

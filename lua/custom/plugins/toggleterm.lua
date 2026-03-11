@@ -32,23 +32,16 @@ return {
 
     local Terminal = require('toggleterm.terminal').Terminal
 
-    -- Terminal horizontal (padrão)
-    local horizontal = Terminal:new { direction = 'horizontal' }
-    -- Terminal flutuante
-    local float = Terminal:new { direction = 'float' }
-    -- Terminal vertical
-    local vertical = Terminal:new { direction = 'vertical' }
-
     vim.keymap.set('n', '<leader>tt', function()
-      horizontal:toggle()
+      Terminal:new({ direction = 'horizontal', dir = vim.fn.getcwd() }):toggle()
     end, { desc = '[T]oggle [T]erminal (horizontal)' })
 
     vim.keymap.set('n', '<leader>tf', function()
-      float:toggle()
+      Terminal:new({ direction = 'float', dir = vim.fn.getcwd() }):toggle()
     end, { desc = '[T]oggle [T]erminal (float)' })
 
     vim.keymap.set('n', '<leader>tv', function()
-      vertical:toggle()
+      Terminal:new({ direction = 'vertical', dir = vim.fn.getcwd() }):toggle()
     end, { desc = '[T]oggle [T]erminal (vertical)' })
 
     -- Navegação entre janelas dentro do terminal

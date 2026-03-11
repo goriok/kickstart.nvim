@@ -96,20 +96,5 @@ return {
     -- Keymaps for opening aerial
     vim.keymap.set('n', '<leader>ts', '<cmd>AerialToggle!<CR>', { desc = '[T]oggle [S]ymbols (Aerial)' })
     vim.keymap.set('n', '<leader>tS', '<cmd>AerialToggleAll<CR>', { desc = '[T]oggle [S]ymbols for all buffers' })
-
-    -- Keymaps for navigation
-    vim.keymap.set('n', 'gO', function()
-      -- Use telescope if available to search symbols, otherwise use aerial
-      pcall(function() require('telescope.builtin').lsp_document_symbols() end)
-    end, { desc = '[G]oto [O]utline (Document Symbols)' })
-
-    -- Optional: Highlight the symbol at the cursor
-    vim.api.nvim_create_autocmd('CursorMoved', {
-      callback = function()
-        if vim.fn.exists ':AerialInfo' == 2 then
-          pcall(function() require('aerial').sync_highlight() end)
-        end
-      end,
-    })
   end,
 }

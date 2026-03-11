@@ -253,12 +253,9 @@ local function matches_globs(filepath, globs)
     return false
   end
   for _, glob in ipairs(globs) do
-    if vim.fn.globpath('.', glob, false, true) then
-      -- Use Vim's glob matching
-      local pattern = vim.fn.glob2regpat(glob)
-      if vim.fn.match(filepath, pattern) >= 0 then
-        return true
-      end
+    local pattern = vim.fn.glob2regpat(glob)
+    if vim.fn.match(filepath, pattern) >= 0 then
+      return true
     end
   end
   return false
@@ -562,7 +559,7 @@ function M.inject_matching_skills(chat)
     return
   end
 
-  -- Estratégia 6: dedup — skip if identical index already present
+  -- Dedup guard: skip if identical index already present
   if already_injected(chat, index, 'agent_skills') then
     return
   end
@@ -582,9 +579,8 @@ function M.inject_matching_skills(chat)
   )
 end
 
---- Inject skill bodies (Level 2) relevant to a specific user message.
+--- Level 2 lazy body injection: inject skill bodies relevant to a specific user message.
 --- Called from on_before_submit with the pending message content.
---- Estratégia 5: message-driven lazy body injection.
 ---@param chat table
 ---@param message string The user message about to be submitted
 function M.inject_skills_for_message(chat, message)
@@ -613,7 +609,7 @@ function M.inject_skills_for_message(chat, message)
 
   local content = build_skill_content(relevant)
 
-  -- Estratégia 6: dedup — skip if this exact body block is already present
+  -- Dedup guard: skip if this exact body block is already present
   if already_injected(chat, content, 'agent_skills_body') then
     return
   end

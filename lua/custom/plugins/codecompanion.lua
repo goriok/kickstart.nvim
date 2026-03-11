@@ -17,7 +17,7 @@ return {
         local skip_skill_injection = { ollama = true, claude_code = true }
         if chat.adapter and not skip_skill_injection[chat.adapter.name] then
           require('custom.agent_skills').inject_matching_skills(chat)
-          -- Estratégia 5: register on_before_submit to inject Level 2 bodies per message
+          -- Lazy body injection: register on_before_submit to inject Level 2 skill bodies per message
           chat:add_callback('on_before_submit', function(c)
             local skip = { ollama = true, claude_code = true }
             if c.adapter and skip[c.adapter.name] then return end
@@ -28,6 +28,35 @@ return {
             end
           end)
         end
+      end,
+    })
+
+    -- After summary is saved: clear chat messages and inject summary automatically
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'CodeCompanionHistorySummarySaved',
+      callback = function(ev)
+        local summary = ev.data and ev.data.summary
+        if not summary then return end
+        local chat = require('codecompanion').last_chat()
+        if not chat then return end
+        -- Clear all messages except system
+        chat.messages = vim.iter(chat.messages):filter(function(msg) return msg.role == 'system' end):totable()
+        -- Clear context items
+        if chat.context and chat.context.items then
+          local ids = {}
+          for id in pairs(chat.context.items) do
+            ids[id] = true
+          end
+          if next(ids) then chat.context:remove_items(ids) end
+        end
+        -- Inject summary as hidden context message
+        local config = require 'codecompanion.config'
+        local chat_title = summary.chat_title or 'Untitled'
+        local ref_id = '<summary>' .. chat_title .. '</summary>'
+        local content = string.format('<summary>\nChat Title: %s\nSummary:\n\n%s\n</summary>', chat_title, summary.content)
+        chat:add_message({ role = config.constants.USER_ROLE, content = content }, { context_id = ref_id, visible = false })
+        chat.context:add({ id = ref_id, source = 'summary' })
+        vim.notify('Context cleared and summary loaded', vim.log.levels.INFO)
       end,
     })
 

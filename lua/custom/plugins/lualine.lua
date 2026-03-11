@@ -17,14 +17,6 @@ return {
         lualine_b = { 'branch', 'diff', 'diagnostics' },
         lualine_c = { 'filename' },
         lualine_x = {
-          {
-            function()
-              local api = require('codecompanion').buf_get_chat(vim.fn.bufnr())
-              if api then return '🤖 ' .. (api.tokens or '-') end
-              return ''
-            end,
-            cond = function() return vim.bo.filetype == 'codecompanion' end,
-          },
           'codecompanion',
           'encoding',
           'fileformat',

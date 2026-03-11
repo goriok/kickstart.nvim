@@ -148,4 +148,8 @@ function M.reset(bufnr)
   vim.cmd.redrawstatus()
 end
 
+-- Self-bootstrap: register autocmds immediately on require.
+-- No external call to M.setup() is needed.
+M.setup()
+
 return M
