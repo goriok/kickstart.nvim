@@ -1076,5 +1076,13 @@ require('lazy').setup({
   },
 })
 
+-- Sync agent skills symlinks: ~/.config/nvim/.claude/skills → ~/.claude/skills
+vim.api.nvim_create_autocmd('VimEnter', {
+  once = true,
+  callback = function()
+    require('custom.skills_sync').sync()
+  end,
+})
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
