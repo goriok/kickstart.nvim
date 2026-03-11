@@ -178,18 +178,13 @@ local function discover_supporting_files(skill_dir)
   end)
   return files
 end
----@param base_dir? string
+--- Scan a single skills directory and return skills found there.
+---@param skills_dir_path string Absolute path to the skills directory
 ---@return AgentSkill[]
-local function discover_skills(base_dir)
-  base_dir = base_dir or vim.fn.getcwd()
-  local skills_dir = Path:new(base_dir, '.claude', 'skills')
+local function scan_skills_dir(skills_dir_path)
   local skills = {}
 
-  if not skills_dir:exists() then
-    return skills
-  end
-
-  local handle = vim.uv.fs_scandir(skills_dir:absolute())
+  local handle = vim.uv.fs_scandir(skills_dir_path)
   if not handle then
     return skills
   end
@@ -200,13 +195,13 @@ local function discover_skills(base_dir)
       break
     end
     if entry_type == 'directory' then
-      local skill_dir_path = skills_dir:absolute() .. '/' .. name
-      local skill_file = Path:new(skill_dir_path, 'SKILL.md')
-      if skill_file:exists() and skill_file:is_file() then
-        local raw = skill_file:read()
+      local skill_dir_path = skills_dir_path .. '/' .. name
+      local skill_file_path = skill_dir_path .. '/SKILL.md'
+      local stat = vim.uv.fs_stat(skill_file_path)
+      if stat and stat.type == 'file' then
+        local raw = Path:new(skill_file_path):read()
         local meta, body = parse_frontmatter(raw)
 
-        -- Fallback: if no description in frontmatter, use first non-header, non-empty line
         if meta.description == '' then
           for line in body:gmatch('[^\n]+') do
             local trimmed = vim.trim(line)
@@ -217,14 +212,13 @@ local function discover_skills(base_dir)
           end
         end
 
-        -- Discover supporting files (templates, examples, scripts)
         local supporting_files = discover_supporting_files(skill_dir_path)
 
         table.insert(skills, {
           name = meta.name or name,
           description = meta.description,
           globs = meta.globs,
-          path = skill_file:absolute(),
+          path = skill_file_path,
           dir = skill_dir_path,
           content = body,
           disable_model_invocation = meta.disable_model_invocation,
@@ -235,6 +229,37 @@ local function discover_skills(base_dir)
         })
       end
     end
+  end
+
+  return skills
+end
+
+---@param base_dir? string
+---@return AgentSkill[]
+local function discover_skills(base_dir)
+  base_dir = base_dir or vim.fn.getcwd()
+
+  local global_dir = Path:new(vim.fn.expand('~'), '.claude', 'skills'):absolute()
+  local local_dir = Path:new(base_dir, '.claude', 'skills'):absolute()
+
+  -- Scan global skills first (lower priority)
+  local skills_by_name = {}
+
+  for _, skill in ipairs(scan_skills_dir(global_dir)) do
+    skills_by_name[skill.name] = skill
+  end
+
+  -- Scan local skills (higher priority — overwrites globals by name)
+  -- Skip if local resolves to same path as global (avoids double-scan)
+  if local_dir ~= global_dir then
+    for _, skill in ipairs(scan_skills_dir(local_dir)) do
+      skills_by_name[skill.name] = skill
+    end
+  end
+
+  local skills = {}
+  for _, skill in pairs(skills_by_name) do
+    table.insert(skills, skill)
   end
 
   table.sort(skills, function(a, b)
