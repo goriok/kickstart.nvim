@@ -3,7 +3,6 @@ name: code-review
 description: Guidelines for performing code reviews on changed files. Apply when the user asks to "review", "code review", "revisar", "check my changes", or "what did I change".
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob
-globs: ["**/*"]
 ---
 
 # Code Review
@@ -11,6 +10,7 @@ globs: ["**/*"]
 ## When to Activate
 
 Activate when the user:
+
 - Asks to "review", "code review", "revisar o código", "check my changes"
 - Asks "what did I change?" or "is this ready to commit/PR?"
 - Requests feedback on staged or unstaged changes
@@ -35,15 +35,15 @@ Always read the **full file**, not just the diff — context matters.
 
 Evaluate changes across these dimensions in order:
 
-| # | Category | What to check |
-|---|----------|---------------|
-| 1 | **Correctness** | Logic errors, off-by-one, nil/null handling, wrong return values |
-| 2 | **Guardrails** | Violations of `AGENTS.md` rules (see below) |
-| 3 | **Security** | Hardcoded secrets, unsafe evals, exposed paths |
-| 4 | **Style & Conventions** | Naming, indentation, `local` usage, self-contained configs |
-| 5 | **Performance** | Unnecessary loops, blocking calls in hot paths |
-| 6 | **Maintainability** | Magic numbers, missing comments on non-obvious logic |
-| 7 | **Tests** | New behaviour without tests, broken existing tests (if a test suite exists — check for `tests/`, `spec/` directories) |
+| #   | Category                | What to check                                                                                                         |
+| --- | ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Correctness**         | Logic errors, off-by-one, nil/null handling, wrong return values                                                      |
+| 2   | **Guardrails**          | Violations of `AGENTS.md` rules (see below)                                                                           |
+| 3   | **Security**            | Hardcoded secrets, unsafe evals, exposed paths                                                                        |
+| 4   | **Style & Conventions** | Naming, indentation, `local` usage, self-contained configs                                                            |
+| 5   | **Performance**         | Unnecessary loops, blocking calls in hot paths                                                                        |
+| 6   | **Maintainability**     | Magic numbers, missing comments on non-obvious logic                                                                  |
+| 7   | **Tests**               | New behaviour without tests, broken existing tests (if a test suite exists — check for `tests/`, `spec/` directories) |
 
 ## Severity Format
 

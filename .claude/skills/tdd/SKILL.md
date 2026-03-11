@@ -1,7 +1,6 @@
 ---
 name: tdd
 description: Guidelines for Test Driven Development. Apply when the user asks to implement a feature or fix a bug using TDD, or mentions "test first", "red green refactor", or "write tests".
-globs: ["**/*"]
 ---
 
 # Test Driven Development
@@ -9,6 +8,7 @@ globs: ["**/*"]
 ## When to Activate
 
 Activate when the user:
+
 - Asks to use TDD, "test first", or "red green refactor"
 - Requests a feature and mentions writing tests before implementation
 - Asks to fix a bug and wants a regression test first
@@ -56,38 +56,38 @@ Repeat steps 1–10 for each new behaviour.
 
 ## Rules
 
-| Rule | Detail |
-|------|--------|
-| **One test at a time** | Never write multiple failing tests before making one pass |
-| **Minimal green** | Write only enough code to pass the current test — resist over-engineering |
-| **Run after every change** | Every edit must be followed by a test run |
-| **No test skipping** | Never use `skip`, `pending`, or comment out a failing test to move forward |
-| **Tests are first-class** | Test code follows the same quality standards as production code |
-| **Descriptive names** | Test names describe behaviour, not implementation: `test_returns_error_when_input_is_empty` |
-| **No production code without a test** | If there is no failing test demanding it, don't write it |
-| **Refactor only on green** | Never refactor while tests are red |
+| Rule                                  | Detail                                                                                      |
+| ------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **One test at a time**                | Never write multiple failing tests before making one pass                                   |
+| **Minimal green**                     | Write only enough code to pass the current test — resist over-engineering                   |
+| **Run after every change**            | Every edit must be followed by a test run                                                   |
+| **No test skipping**                  | Never use `skip`, `pending`, or comment out a failing test to move forward                  |
+| **Tests are first-class**             | Test code follows the same quality standards as production code                             |
+| **Descriptive names**                 | Test names describe behaviour, not implementation: `test_returns_error_when_input_is_empty` |
+| **No production code without a test** | If there is no failing test demanding it, don't write it                                    |
+| **Refactor only on green**            | Never refactor while tests are red                                                          |
 
 ## Test File Conventions
 
-| Language | Test framework | Test location | Naming pattern | Template |
-|----------|---------------|---------------|----------------|----------|
-| Lua | `busted` / `plenary.busted` | `tests/` or `spec/` | `*_spec.lua` | [templates/lua-spec.lua](templates/lua-spec.lua) |
-| Python | `pytest` | `tests/` | `test_*.py` | [templates/python-test.py](templates/python-test.py) |
-| Go | `testing` | same package | `*_test.go` | [templates/go-test.go](templates/go-test.go) |
-| Ruby | `rspec` | `spec/` | `*_spec.rb` | — |
-| JS/TS | `vitest` / `jest` | `__tests__/` or colocated | `*.test.{js,ts}` | — |
+| Language | Test framework              | Test location             | Naming pattern   | Template                                             |
+| -------- | --------------------------- | ------------------------- | ---------------- | ---------------------------------------------------- |
+| Lua      | `busted` / `plenary.busted` | `tests/` or `spec/`       | `*_spec.lua`     | [templates/lua-spec.lua](templates/lua-spec.lua)     |
+| Python   | `pytest`                    | `tests/`                  | `test_*.py`      | [templates/python-test.py](templates/python-test.py) |
+| Go       | `testing`                   | same package              | `*_test.go`      | [templates/go-test.go](templates/go-test.go)         |
+| Ruby     | `rspec`                     | `spec/`                   | `*_spec.rb`      | —                                                    |
+| JS/TS    | `vitest` / `jest`           | `__tests__/` or colocated | `*.test.{js,ts}` | —                                                    |
 
 If the project already has tests, **follow the existing convention** — check for test directories and patterns before creating new files.
 
 ## Test Run Commands
 
-| Language | Command |
-|----------|---------|
-| Lua | `busted` or `nvim --headless -c "PlenaryBustedDirectory tests/"` |
-| Python | `pytest` or `pytest path/to/test_file.py::test_name` |
-| Go | `go test ./...` or `go test -run TestName ./path/` |
-| Ruby | `bundle exec rspec` or `rspec spec/path_spec.rb` |
-| JS/TS | `npx vitest run` or `npx jest --testPathPattern=path` |
+| Language | Command                                                          |
+| -------- | ---------------------------------------------------------------- |
+| Lua      | `busted` or `nvim --headless -c "PlenaryBustedDirectory tests/"` |
+| Python   | `pytest` or `pytest path/to/test_file.py::test_name`             |
+| Go       | `go test ./...` or `go test -run TestName ./path/`               |
+| Ruby     | `bundle exec rspec` or `rspec spec/path_spec.rb`                 |
+| JS/TS    | `npx vitest run` or `npx jest --testPathPattern=path`            |
 
 Prefer running **the single test** during Red/Green. Run the **full suite** after Refactor.
 

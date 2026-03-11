@@ -1,7 +1,6 @@
 ---
 name: bug-fix
 description: Guidelines for diagnosing and fixing bugs during feature implementation. Apply when the user reports an error, unexpected behaviour, test failure, or asks to fix/debug code.
-globs: ["**/*"]
 ---
 
 # Bug Fix — Feature Implementation
@@ -9,6 +8,7 @@ globs: ["**/*"]
 ## When to Activate
 
 Activate when the user:
+
 - Reports an error, exception, or unexpected behaviour
 - Asks to "fix", "debug", or "investigate" something
 - Shows a failing test, LSP diagnostic, or runtime error
@@ -40,13 +40,13 @@ Repeat steps 4–6 until the file is clean. Stop after **3 failed iterations** �
 
 ## Fix Rules
 
-| Rule | Detail |
-|------|--------|
-| **Minimal scope** | Fix only the code that causes the bug; do not refactor unrelated logic |
-| **Preserve style** | Match indentation, naming conventions, and patterns of the existing file |
-| **No new deps** | Do not add new libraries, plugins, or modules without explicit user approval |
-| **No side effects** | A bug fix must not change observable behaviour in unrelated code paths |
-| **One bug per fix** | If multiple bugs are found, fix them sequentially and confirm each one |
+| Rule                | Detail                                                                       |
+| ------------------- | ---------------------------------------------------------------------------- |
+| **Minimal scope**   | Fix only the code that causes the bug; do not refactor unrelated logic       |
+| **Preserve style**  | Match indentation, naming conventions, and patterns of the existing file     |
+| **No new deps**     | Do not add new libraries, plugins, or modules without explicit user approval |
+| **No side effects** | A bug fix must not change observable behaviour in unrelated code paths       |
+| **One bug per fix** | If multiple bugs are found, fix them sequentially and confirm each one       |
 
 ## Validation Checklist
 

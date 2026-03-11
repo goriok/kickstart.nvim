@@ -1,7 +1,6 @@
 ---
 name: conventional-commits
 description: Rules for writing git commit messages using Conventional Commits (without scope). Apply when creating commits, suggesting commit messages, or reviewing commit history.
-globs: ["**/*"]
 ---
 
 # Conventional Commits (No Scope)

@@ -2,7 +2,6 @@
 name: repomix
 description: Guidelines for generating a repomix XML output. Apply when the user asks to run repomix, generate a codebase context file, or export the project for AI consumption.
 disable-model-invocation: true
-globs: ["**/*"]
 ---
 
 # Repomix XML Output
