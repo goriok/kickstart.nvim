@@ -5,6 +5,7 @@ return {
     { '<leader>tt', desc = '[T]oggle [T]erminal (horizontal)' },
     { '<leader>tf', desc = '[T]oggle [T]erminal (float)' },
     { '<leader>tv', desc = '[T]oggle [T]erminal (vertical)' },
+    { '<leader>tg', desc = '[T]ests: [G]radle rotation-calculator' },
   },
   opts = {
     size = function(term)
@@ -43,6 +44,16 @@ return {
     vim.keymap.set('n', '<leader>tv', function()
       Terminal:new({ direction = 'vertical', dir = vim.fn.getcwd() }):toggle()
     end, { desc = '[T]oggle [T]erminal (vertical)' })
+
+    local jdk = os.getenv('HOME') .. '/jdk/zulu17.58.21-ca-jdk17.0.15-macosx_aarch64/zulu-17.jdk/Contents/Home'
+    vim.keymap.set('n', '<leader>tg', function()
+      Terminal:new({
+        cmd = 'JAVA_HOME="' .. jdk .. '" ./gradlew :rotation-calculator:test',
+        dir = '/Users/goriok/sources/24hface',
+        direction = 'horizontal',
+        close_on_exit = false,
+      }):toggle()
+    end, { desc = '[T]ests: [G]radle rotation-calculator' })
 
     -- Navegação entre janelas dentro do terminal
     vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], { desc = 'Move focus left (terminal)' })

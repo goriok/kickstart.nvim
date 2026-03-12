@@ -15,6 +15,7 @@ LSP, formatting, linting and Treesitter highlighting configured for:
 | YAML       | `yaml-language-server` | `prettierd`            | `yamllint`                     |
 | JSON       | —                      | `prettierd`            | `jsonlint`                     |
 | CSS/HTML   | —                      | `prettierd`            | —                              |
+| Kotlin     | `kotlin-language-server` | `ktlint`             | `ktlint`                       |
 
-Treesitter parsers also installed for: `bash`, `c`, `diff`, `mermaid`, `jsdoc`, `luadoc`, `query`, `vim`, `vimdoc`, and all languages above.
+Treesitter parsers also installed for: `bash`, `c`, `diff`, `mermaid`, `jsdoc`, `luadoc`, `query`, `vim`, `vimdoc`, `kotlin`, `xml`, and all languages above.
 Filetype-to-parser mapping: `typescriptreact` → `tsx`, `javascriptreact` → `javascript`.

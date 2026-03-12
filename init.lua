@@ -640,6 +640,13 @@ require('lazy').setup({
         marksman = {},
         ['yaml-language-server'] = {},
         -- jsonls = {},
+        kotlin_language_server = {
+          settings = {
+            kotlin = {
+              compiler = { jvm = { target = '17' } },
+            },
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -653,6 +660,7 @@ require('lazy').setup({
       local lspconfig_to_mason = {
         ruby_lsp = 'ruby-lsp',
         ts_ls = 'typescript-language-server',
+        kotlin_language_server = 'kotlin-language-server',
       }
 
       local ensure_installed = {}
@@ -669,6 +677,8 @@ require('lazy').setup({
         'markdownlint',
         'rubocop', -- Ruby linter/formatter
         'eslint-lsp', -- ESLint language server
+        'kotlin-language-server',
+        'ktlint',
         -- You can add other tools here that you want Mason to install
       })
 
@@ -751,6 +761,7 @@ require('lazy').setup({
         typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         css = { 'prettierd', 'prettier', stop_after_first = true },
         html = { 'prettierd', 'prettier', stop_after_first = true },
+        kotlin = { 'ktlint' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
       },
@@ -1003,6 +1014,8 @@ require('lazy').setup({
         'typescript',
         'tsx',
         'jsdoc',
+        'kotlin',
+        'xml',
       }
       require('nvim-treesitter').install(filetypes)
       -- nvim-treesitter uses parser names (e.g. 'tsx'), but FileType events use
