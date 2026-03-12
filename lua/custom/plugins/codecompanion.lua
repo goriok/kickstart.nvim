@@ -12,14 +12,15 @@ return {
       callback = function(ev)
         local chat = require('codecompanion').buf_get_chat(ev.data.bufnr)
         if not chat then return end
-        if chat.adapter and chat.adapter.name == 'copilot' then chat.tool_registry:add_group 'agent' end
+        local acp_adapters = { claude_code = true, opencode = true }
+        if chat.adapter and not acp_adapters[chat.adapter.name] then chat.tool_registry:add_group 'agent' end
         -- Inject Agent Skills Level 1 index only (lazy body loading happens on_before_submit)
-        local skip_skill_injection = { ollama = true, claude_code = true }
+        local skip_skill_injection = { ollama = true, claude_code = true, opencode = true }
         if chat.adapter and not skip_skill_injection[chat.adapter.name] then
           require('custom.agent_skills').inject_matching_skills(chat)
           -- Lazy body injection: register on_before_submit to inject Level 2 skill bodies per message
           chat:add_callback('on_before_submit', function(c)
-            local skip = { ollama = true, claude_code = true }
+            local skip = { ollama = true, claude_code = true, opencode = true }
             if c.adapter and skip[c.adapter.name] then return end
             local parser = require 'codecompanion.interactions.chat.parser'
             local pending = parser.messages(c, c.header_line)
@@ -70,7 +71,8 @@ return {
         if not adapter then return end
         local chat = require('codecompanion').buf_get_chat(ev.data.bufnr)
         if not chat then return end
-        if adapter.name == 'ollama' then
+        local acp_adapters = { ollama = true, claude_code = true, opencode = true }
+        if acp_adapters[adapter.name] then
           chat:remove_tagged_message 'rules'
           chat:remove_tagged_message 'system_prompt_from_config'
           chat:remove_tagged_message 'agent_skills'
@@ -95,6 +97,9 @@ return {
     require('codecompanion').setup {
       adapters = {
         acp = {
+          opencode = function()
+            return require('codecompanion.adapters').extend('opencode', {})
+          end,
           claude_code = function()
             return require('codecompanion.adapters').extend('claude_code', {
               env = {
@@ -170,7 +175,8 @@ return {
             max_tokens = 4096,
             temperature = 0.7,
             system_prompt = function(ctx)
-              if ctx.adapter and ctx.adapter.name == 'ollama' then return '' end
+              local no_system_prompt = { ollama = true, claude_code = true, opencode = true }
+              if ctx.adapter and no_system_prompt[ctx.adapter.name] then return '' end
               return ctx.default_system_prompt
             end,
           },
