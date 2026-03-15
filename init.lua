@@ -638,7 +638,24 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         ts_ls = {},
         marksman = {},
-        ['yaml-language-server'] = {},
+        ['yaml-language-server'] = {
+          settings = {
+            yaml = {
+              schemas = {
+                -- Kubernetes manifests: any .yaml file gets K8s schema
+                -- Override per-file with: # yaml-language-server: $schema=<url>
+                kubernetes = '*.yaml',
+              },
+              schemaStore = {
+                -- Pull additional schemas from SchemaStore (Helm, GitHub Actions, etc.)
+                enable = true,
+                url = 'https://www.schemastore.org/api/json/catalog.json',
+              },
+              validate = true,
+              format = { enable = false }, -- formatting handled by conform.nvim (prettierd)
+            },
+          },
+        },
         -- jsonls = {},
         kotlin_language_server = {
           settings = {
