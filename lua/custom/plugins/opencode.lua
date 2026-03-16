@@ -26,7 +26,7 @@ return {
       vim.cmd('split')
       vim.cmd('wincmd J')
       vim.cmd('terminal')
-      vim.cmd('resize 4')
+      vim.cmd('resize 7')
 
       -- 5. Volta o foco para o Opencode
       vim.cmd('wincmd k')
