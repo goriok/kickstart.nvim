@@ -169,6 +169,10 @@ vim.o.foldlevel = 99 -- open all folds by default
 vim.o.foldlevelstart = 99 -- same for new buffers
 vim.o.foldnestmax = 4 -- limit fold depth (avoid overly nested folds)
 
+-- Session options — controls what persistence.nvim persists per directory
+-- See `:help 'sessionoptions'`
+vim.opt.sessionoptions = "buffers,curdir,tabpages,winsize,winpos"
+
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
@@ -857,16 +861,7 @@ require('lazy').setup({
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'codecompanion' },
-
-        providers = {
-          codecompanion = {
-            name = 'CodeCompanion',
-            module = 'codecompanion.providers.completion.blink',
-            enabled = true,
-            score = 100,
-          },
-        },
+        default = { 'lsp', 'path', 'snippets' },
       },
 
       snippets = { preset = 'default' },
@@ -1104,14 +1099,6 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
-})
-
--- Sync agent skills symlinks: ~/.config/nvim/.claude/skills → ~/.claude/skills
-vim.api.nvim_create_autocmd('VimEnter', {
-  once = true,
-  callback = function()
-    require('custom.skills_sync').sync()
-  end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`

@@ -79,6 +79,24 @@ The file must mirror the chat response exactly.
 - `Status` checkboxes allow the user to track progress after approval
 - Add `docs/plans/` to `.gitignore` only if the user explicitly requests it; otherwise commit the file
 
+## Todo List
+
+When the `todowrite` tool is available (e.g. running inside OpenCode), use it to
+register every implementation step as a todo item **after** presenting the plan to
+the user and receiving approval to execute.
+
+### Behaviour
+
+- Call `todowrite` once — pass all steps as individual items with status `pending`
+- As execution proceeds, update each item: `pending` → `in_progress` → `completed`
+- Only one item should be `in_progress` at a time
+- Do **not** call `todowrite` during plan mode itself — only after the user approves
+
+### When unavailable
+
+If `todowrite` is not available (e.g. running in a plain chat window), skip this
+section entirely. The plan file in `docs/plans/` serves as the paper trail instead.
+
 ## Rules
 
 - Never skip the Affected Files table — it prevents accidental changes

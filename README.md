@@ -69,6 +69,16 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
   - `<C-v>`: Open in vertical split
   - `<C-t>`: Open in new tab
 
+### Session Management
+
+- **Plugin**: [persistence.nvim](https://github.com/folke/persistence.nvim)
+- **Description**: Automatically saves the current session (open buffers, splits, window sizes, working directory) on exit and restores it when you reopen Neovim in the same directory.
+- **Behavior**: Session is saved automatically on `VimLeavePre` and can be restored manually or via keymap.
+- **Keymaps**:
+  - `<leader>qs`: Restore session for the current directory
+  - `<leader>ql`: Restore last session (regardless of directory)
+  - `<leader>qd`: Quit without saving the session
+
 ### Window Management
 
 - **Plugin**: [vim-maximizer](https://github.com/szw/vim-maximizer)
@@ -103,6 +113,9 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 | `<C-l>`       | Accept Copilot suggestion (Insert mode) |
 | `<leader>mr`  | Toggle Markdown render (in-editor)      |
 | `<leader>mp`  | Toggle Markdown preview (browser)       |
+| `<leader>qs`  | Restore session for current directory   |
+| `<leader>ql`  | Restore last session                    |
+| `<leader>qd`  | Quit without saving session             |
 
 ## Language Support
 

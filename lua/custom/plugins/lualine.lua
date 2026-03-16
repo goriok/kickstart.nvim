@@ -1,8 +1,7 @@
 return {
   'nvim-lualine/lualine.nvim',
   dependencies = {
-    'nvim-tree/nvim-web-devicons', -- Necessário para os ícones bonitos
-    'franco-ruggeri/codecompanion-lualine.nvim',
+    'nvim-tree/nvim-web-devicons',
   },
   config = function()
     require('lualine').setup {
@@ -17,7 +16,6 @@ return {
         lualine_b = { 'branch', 'diff', 'diagnostics' },
         lualine_c = { 'filename' },
         lualine_x = {
-          'codecompanion',
           'encoding',
           'fileformat',
           'filetype',
