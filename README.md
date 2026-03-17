@@ -41,6 +41,23 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 - **Custom Commands**:
   - `:CCTitle <new title>`: Rename the current chat (updates UI, history, and buffer name)
 
+### Claude Code IDE Integration
+
+- **Plugin**: [claudecode.nvim](https://github.com/coder/claudecode.nvim)
+- **Description**: Native Neovim IDE extension for Claude Code CLI. Implements the same WebSocket MCP protocol as the official VS Code extension — Claude sees your buffers, selections, and can propose diffs in real-time.
+- **Requirements**: `claude` CLI installed (`~/.local/bin/claude`)
+- **Keymaps**:
+  - `<leader>cc`: Toggle Claude Code terminal
+  - `<leader>cf`: Focus Claude terminal
+  - `<leader>cr`: Resume last Claude session
+  - `<leader>cb`: Add current buffer to Claude context
+  - `<leader>cs` _(visual)_: Send selection to Claude
+  - `<leader>ca`: Accept proposed diff
+  - `<leader>cd`: Deny proposed diff
+- **Commands**:
+  - `:ClaudeCodeStatus` — check WebSocket server status
+  - `:ClaudeCodeSelectModel` — select Claude model
+
 ### Inline AI Suggestions
 
 - **Plugin**: [copilot.lua](https://github.com/zbirenbaum/copilot.lua)
@@ -113,6 +130,13 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 | `<C-l>`       | Accept Copilot suggestion (Insert mode) |
 | `<leader>mr`  | Toggle Markdown render (in-editor)      |
 | `<leader>mp`  | Toggle Markdown preview (browser)       |
+| `<leader>cc`  | Toggle Claude Code terminal             |
+| `<leader>cf`  | Focus Claude Code terminal              |
+| `<leader>cr`  | Resume last Claude session              |
+| `<leader>cb`  | Add current buffer to Claude context    |
+| `<leader>cs`  | Send selection to Claude (visual mode)  |
+| `<leader>ca`  | Accept Claude diff                      |
+| `<leader>cd`  | Deny Claude diff                        |
 | `<leader>qs`  | Restore session for current directory   |
 | `<leader>ql`  | Restore last session                    |
 | `<leader>qd`  | Quit without saving session             |
