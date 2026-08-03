@@ -1,4 +1,10 @@
 ---
+<!--
+  AUTO-SYNCED from ~/.config/opencode/skills/tdd/SKILL.md
+  DO NOT EDIT — overwritten on next `ocx agents sync`.
+  Source of truth: ~/.config/opencode/skills/tdd/SKILL.md
+-->
+
 name: tdd
 description: Guidelines for Test Driven Development. Apply when the user asks to implement a feature or fix a bug using TDD, or mentions "test first", "red green refactor", or "write tests".
 ---

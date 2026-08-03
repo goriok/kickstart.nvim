@@ -1,4 +1,10 @@
 ---
+<!--
+  AUTO-SYNCED from ~/.config/opencode/skills/conventional-commits/SKILL.md
+  DO NOT EDIT — overwritten on next `ocx agents sync`.
+  Source of truth: ~/.config/opencode/skills/conventional-commits/SKILL.md
+-->
+
 name: conventional-commits
 description: Rules for writing git commit messages using Conventional Commits (without scope). Apply when creating commits, suggesting commit messages, or reviewing commit history.
 ---
@@ -18,34 +24,34 @@ description: Rules for writing git commit messages using Conventional Commits (w
 
 ## Allowed Types
 
-| Type       | When to use                                         |
-|------------|-----------------------------------------------------|
-| `feat`     | New feature or capability                           |
-| `fix`      | Bug fix                                             |
-| `chore`    | Maintenance, deps, tooling (no production code)     |
-| `docs`     | Documentation only (but not for new agent skills)   |
+| Type       | When to use                                             |
+| ---------- | ------------------------------------------------------- |
+| `feat`     | New feature or capability                               |
+| `fix`      | Bug fix                                                 |
+| `chore`    | Maintenance, deps, tooling (no production code)         |
+| `docs`     | Documentation only                                      |
 | `refactor` | Code change that neither fixes a bug nor adds a feature |
-| `style`    | Formatting, whitespace, missing semicolons          |
-| `perf`     | Performance improvement                             |
-| `test`     | Adding or updating tests                            |
-| `ci`       | CI/CD configuration                                 |
-| `build`    | Build system or external dependency changes         |
-| `revert`   | Reverts a previous commit                           |
+| `style`    | Formatting, whitespace, missing semicolons              |
+| `perf`     | Performance improvement                                 |
+| `test`     | Adding or updating tests                                |
+| `ci`       | CI/CD configuration                                     |
+| `build`    | Build system or external dependency changes             |
+| `revert`   | Reverts a previous commit                               |
 
 ## Examples
 
 ```
-feat: add telescope live-grep keymap
-fix: correct LSP attach autocmd for Go files
-chore: update lazy-lock.json
-docs: document MCP server setup in README
-refactor: extract shared LSP on_attach function
-style: fix trailing whitespace in init.lua
-perf: lazy-load treesitter parsers
-test: add spec for custom statusline module
-ci: add luacheck to GitHub Actions
-build: bump minimum Neovim version to 0.11
-revert: undo telescope config change
+feat: add user authentication endpoint
+fix: handle null reference in payment processor
+chore: update dependencies to latest stable versions
+docs: document API rate limiting behaviour
+refactor: extract validation logic into separate module
+style: fix inconsistent indentation in config files
+perf: add database index for user lookup queries
+test: add integration tests for checkout flow
+ci: add automated security scanning to pipeline
+build: bump minimum Node.js version to 20
+revert: undo payment gateway config change
 ```
 
 ## Multi-line Body (optional)
@@ -66,21 +72,16 @@ when running Neovim over SSH without X11 forwarding.
 Append `!` before the colon:
 
 ```
-feat!: migrate keymaps to vim.keymap.set API
+feat!: migrate authentication to OAuth 2.0
 ```
 
 Or add a `BREAKING CHANGE:` footer in the body.
 
-## Special Cases
-
-**Creating a new agent skill** → use `feat:` not `docs:`
-- Agent skills are functionality extensions, not just documentation
-- Example: `feat: add plan-mode skill for architectural planning`
-
 ## Rules
 
 1. **One commit per logical change** — don't mix unrelated changes
-2. **Never use a scope in parentheses** — write `feat:` not `feat(telescope):`
+2. **Never use a scope in parentheses** — write `feat:` not `feat(auth):`
 3. **Never push to remote** without explicit user approval
 4. **Stage only relevant files** before committing
 5. When in doubt, prefer `chore` for non-user-facing changes
+6. The commit must not have more than 65 characters

@@ -3,6 +3,7 @@ name: creating-skills
 description: How to create, structure and maintain agent skills in this workspace. Apply when the user asks to create, edit, or organise a SKILL.md file.
 user-invocable: false
 globs: [".claude/skills/**/SKILL.md"]
+tool: claude-only
 ---
 
 # Creating Agent Skills

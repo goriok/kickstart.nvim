@@ -1,4 +1,10 @@
 ---
+<!--
+  AUTO-SYNCED from ~/.config/opencode/skills/code-review/SKILL.md
+  DO NOT EDIT — overwritten on next `ocx agents sync`.
+  Source of truth: ~/.config/opencode/skills/code-review/SKILL.md
+-->
+
 name: code-review
 description: Guidelines for performing code reviews on changed files. Apply when the user asks to "review", "code review", "revisar", "check my changes", or "what did I change".
 disable-model-invocation: true
@@ -38,9 +44,9 @@ Evaluate changes across these dimensions in order:
 | #   | Category                | What to check                                                                                                         |
 | --- | ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | 1   | **Correctness**         | Logic errors, off-by-one, nil/null handling, wrong return values                                                      |
-| 2   | **Guardrails**          | Violations of `AGENTS.md` rules (see below)                                                                           |
+| 2   | **Guardrails**          | Violations of universal and project-specific rules (see below)                                                        |
 | 3   | **Security**            | Hardcoded secrets, unsafe evals, exposed paths                                                                        |
-| 4   | **Style & Conventions** | Naming, indentation, `local` usage, self-contained configs                                                            |
+| 4   | **Style & Conventions** | Naming, indentation, formatting, self-contained configs                                                               |
 | 5   | **Performance**         | Unnecessary loops, blocking calls in hot paths                                                                        |
 | 6   | **Maintainability**     | Magic numbers, missing comments on non-obvious logic                                                                  |
 | 7   | **Tests**               | New behaviour without tests, broken existing tests (if a test suite exists — check for `tests/`, `spec/` directories) |
@@ -62,14 +68,25 @@ Group findings by file. After all findings, add a **Summary** line:
 Summary: X blocker(s), Y warning(s), Z suggestion(s) — [ready to commit | needs fixes]
 ```
 
-## Project Guardrails (from AGENTS.md)
+## Universal Guardrails
 
-Always verify these automatically:
+Always verify automatically:
 
-- [ ] No plugin removed without checking it is not a dependency in `lua/custom/plugins/`
-- [ ] `lazy-lock.json` not modified directly
-- [ ] No hardcoded paths — must use `vim.fn.stdpath('data')` / `vim.fn.stdpath('config')`
-- [ ] Commit message follows Conventional Commits format (no scope in parentheses)
+- [ ] No secrets, tokens, or credentials hardcoded in source files
+- [ ] No `.env`, key files, or credential files staged for commit
+- [ ] No debug statements left in production code (`console.log`, `print`, `debugger`, `binding.pry`, etc.)
+- [ ] No commented-out blocks of dead code committed
+- [ ] Build artifacts and OS files are gitignored and not staged
+
+## Project-Specific Guardrails
+
+Before reviewing, look for a project rules file in this order:
+1. `AGENTS.md` at the repo root
+2. `.opencode/AGENTS.md`
+3. `CONTRIBUTING.md`
+4. `.cursor/rules/` directory
+
+Read whichever is found and extend the checklist above with any project-specific conventions, forbidden patterns, or architectural constraints defined there. If none is found, proceed with universal guardrails only.
 
 ## Agent Constraints
 
@@ -77,15 +94,6 @@ These apply to the agent at all times, independent of the diff:
 
 - Never push to remote without explicit user approval
 - Never apply fixes silently — always report findings first
-
-## Lua / Neovim Specific Checks
-
-- All variables declared with `local`
-- Plugin configs are self-contained (no side effects on global state)
-- Keymaps use `vim.keymap.set`, not the deprecated `vim.api.nvim_set_keymap` (unless necessary)
-- LSP `on_attach` callbacks do not duplicate global keymaps
-- No `print()` debug statements left in production code
-- Autocommands are grouped inside a named `augroup` to prevent duplication
 
 ## Inline Fix Rules
 
@@ -105,3 +113,45 @@ Use the template in [template.md](template.md) for the review output structure.
 - ❌ Skipping the guardrail checklist
 - ❌ Applying fixes without user confirmation for WARNING or above on large changes
 - ❌ Leaving the review without a Summary line
+
+---
+
+## Documentation Standards
+
+If a review report is saved to disk, it MUST follow these rules:
+
+**Format & Location**
+- File format: `.md` (Markdown only)
+- Save path: `docs/reviews/` relative to the project root
+- Filename convention: `docs/reviews/YYYY-MM-DD-branch-or-pr-slug.md`
+
+**Frontmatter (mandatory)**
+
+```yaml
+---
+title: "Code Review: [branch or PR title]"
+date: YYYY-MM-DD
+type: review
+status: draft | published
+authors: []
+tags: []
+---
+```
+
+- `tags` — include affected service/module and verdict (approved/needs-fixes)
+- When searching for prior reviews, grep `type: review` and `tags` first
+
+**Diagrams**
+
+If a diagram is needed to illustrate a finding, use Mermaid strict mode:
+
+````markdown
+```mermaid
+%%{init: {"theme": "default"}}%%
+%% strict mode — no implicit node creation %%
+flowchart LR
+    A --> B
+```
+````
+
+No ASCII art diagrams.

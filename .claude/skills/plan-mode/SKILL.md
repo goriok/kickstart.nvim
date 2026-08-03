@@ -2,6 +2,7 @@
 name: plan-mode
 description: Guidelines for entering plan mode in codecompanion chat or agent sessions. Apply when the user asks to plan, design, architect, or structure a feature before implementation.
 disable-model-invocation: true
+tool: claude-only
 ---
 
 # Plan Mode

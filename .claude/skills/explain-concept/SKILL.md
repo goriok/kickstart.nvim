@@ -3,6 +3,7 @@ name: explain-concept
 description: Explains a programming or Neovim/Lua concept with code examples — preferring real examples from the current project — and generates a Markdown documentation file. Apply when the user asks to "explain", "what is", "how does X work", "document X", or "criar doc sobre".
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob
+tool: claude-only
 ---
 
 # Explain Concept

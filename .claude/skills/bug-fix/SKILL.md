@@ -1,4 +1,10 @@
 ---
+<!--
+  AUTO-SYNCED from ~/.config/opencode/skills/bug-fix/SKILL.md
+  DO NOT EDIT — overwritten on next `ocx agents sync`.
+  Source of truth: ~/.config/opencode/skills/bug-fix/SKILL.md
+-->
+
 name: bug-fix
 description: Guidelines for diagnosing and fixing bugs during feature implementation. Apply when the user reports an error, unexpected behaviour, test failure, or asks to fix/debug code.
 ---
@@ -64,10 +70,6 @@ After every fix, verify:
 - If the fix required a trade-off or assumption, call it out explicitly
 - If 3 iterations failed, summarise what was tried and ask the user for more context
 
-## Scripts
-
-- For a quick health check on the Neovim config, run [scripts/check-health.sh](scripts/check-health.sh)
-
 ## Anti-patterns
 
 - ❌ Editing a file without reading it first
@@ -75,3 +77,44 @@ After every fix, verify:
 - ❌ Changing function signatures or interfaces to "work around" a bug
 - ❌ Adding `print` / `console.log` debug statements and leaving them in
 - ❌ Fixing a symptom without understanding the cause
+
+---
+
+## Documentation Standards
+
+If a bug report or post-fix summary document is produced, it MUST follow these rules:
+
+**Format & Location**
+- File format: `.md` (Markdown only)
+- Save path: `docs/bug-reports/` relative to the project root
+
+**Frontmatter (mandatory)**
+
+```yaml
+---
+title: "Bug Report: [short description]"
+date: YYYY-MM-DD
+type: bug-report
+status: draft | resolved
+authors: []
+tags: []
+---
+```
+
+- `tags` — include affected file/module, language, and error category
+- When searching for prior bug reports, grep `type: bug-report` and `tags` first
+
+**Diagrams**
+
+If a diagram is needed to explain the execution path or root cause, use Mermaid strict mode:
+
+````markdown
+```mermaid
+%%{init: {"theme": "default"}}%%
+%% strict mode — no implicit node creation %%
+flowchart LR
+    A --> B
+```
+````
+
+No ASCII art diagrams.

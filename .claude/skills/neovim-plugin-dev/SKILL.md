@@ -2,6 +2,7 @@
 name: neovim-plugin-dev
 description: Guidelines and patterns for developing and configuring Neovim plugins in this Lua-based setup.
 globs: ["lua/custom/plugins/*.lua", "lua/kickstart/plugins/*.lua"]
+tool: claude-only
 ---
 
 # Neovim Plugin Development

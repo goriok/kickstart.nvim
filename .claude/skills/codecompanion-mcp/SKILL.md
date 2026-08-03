@@ -2,6 +2,7 @@
 name: codecompanion-mcp
 description: Guidelines for adding and configuring MCP servers in the codecompanion.nvim setup. Apply when adding, editing, or removing MCP servers from the codecompanion config.
 globs: ["lua/custom/plugins/codecompanion.lua"]
+tool: claude-only
 ---
 
 # CodeCompanion MCP Servers
