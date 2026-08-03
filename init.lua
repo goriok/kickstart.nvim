@@ -139,7 +139,9 @@ vim.o.timeoutlen = 300
 vim.o.splitright = true
 vim.o.splitbelow = true
 
-vim.opt.wrap = false
+vim.opt.wrap = true
+vim.opt.linebreak = true -- Break lines at word boundaries
+vim.opt.showbreak = '↪ ' -- Show wrap indicator
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
