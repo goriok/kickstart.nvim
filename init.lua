@@ -1019,7 +1019,6 @@ require('lazy').setup({
         'python',
         'go',
         'json',
-        'jsonc',
         'yaml',
         'ruby',
         'javascript',
