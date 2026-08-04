@@ -864,6 +864,17 @@ require('lazy').setup({
 
       sources = {
         default = { 'lsp', 'path', 'snippets' },
+        per_filetype = {
+          -- Autocomplete de notação matemática discreta (gatilho '\', ex. \su -> \subseteq)
+          -- ver lua/math_symbols/init.lua e ctx-source: usando-matematica-discreta-no-meu-dia-a-dia
+          markdown = { inherit_defaults = true, 'math_symbols' },
+        },
+        providers = {
+          math_symbols = {
+            name = 'MathSymbols',
+            module = 'math_symbols',
+          },
+        },
       },
 
       snippets = { preset = 'default' },
