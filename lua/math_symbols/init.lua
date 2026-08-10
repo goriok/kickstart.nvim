@@ -40,6 +40,18 @@ local SYMBOLS = {
   { trigger = '\\N', symbol = 'ℕ', desc = 'naturais' },
   { trigger = '\\Z', symbol = 'ℤ', desc = 'inteiros' },
   { trigger = '\\R', symbol = 'ℝ', desc = 'reais' },
+  { trigger = '\\U', symbol = '𝕌', desc = 'conjunto universo' },
+  { trigger = '\\fn', symbol = '𝑓', desc = 'função genérica (itálico matemático) — ex. 𝑓: A → B' },
+  -- implicação/bicondicional metanível (entre afirmações/passos de prova, distinto de →/↔ dentro de fórmula)
+  { trigger = '\\Rightarrow', symbol = '⇒', desc = 'implica (metanível — "logo", entre afirmações)' },
+  { trigger = '\\Leftrightarrow', symbol = '⇔', desc = 'se e somente se (metanível)' },
+  -- definição
+  { trigger = '\\:=', symbol = '≔', desc = 'definido como (:= )' },
+  -- cardinalidade infinita / limites
+  { trigger = '\\aleph', symbol = 'ℵ', desc = 'cardinalidade infinita' },
+  { trigger = '\\bigcap', symbol = '⋂', desc = 'interseção generalizada sobre família de conjuntos' },
+  { trigger = '\\bigcup', symbol = '⋃', desc = 'união generalizada sobre família de conjuntos' },
+  { trigger = '\\infty', symbol = '∞', desc = 'infinito' },
   -- composição / topo-fundo de ordem parcial
   { trigger = '\\circ', symbol = '∘', desc = 'composição de funções' },
   { trigger = '\\top', symbol = '⊤', desc = 'topo (maior elemento)' },
