@@ -44,6 +44,7 @@ local SYMBOLS = {
   { trigger = '\\R', symbol = 'ℝ', desc = 'reais' },
   { trigger = '\\U', symbol = '𝕌', desc = 'conjunto universo' },
   { trigger = '\\fn', symbol = '𝑓', desc = 'função genérica (itálico matemático) — ex. 𝑓: A → B' },
+  { trigger = '\\ell', symbol = 'ℓ', desc = 'função de rotulagem de grafo — ex. ℓ: E → Σ' },
   -- implicação/bicondicional metanível (entre afirmações/passos de prova, distinto de →/↔ dentro de fórmula)
   { trigger = '\\Rightarrow', symbol = '⇒', desc = 'implica (metanível — "logo", entre afirmações)' },
   { trigger = '\\Leftrightarrow', symbol = '⇔', desc = 'se e somente se (metanível)' },
