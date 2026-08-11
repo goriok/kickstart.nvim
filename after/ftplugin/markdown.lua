@@ -89,25 +89,7 @@ for lower, glyph in pairs(vim.deepcopy(SUBSCRIPT_MAP)) do
   if upper ~= lower then SUBSCRIPT_MAP[upper] = glyph end
 end
 
-vim.keymap.set('i', '<C-j>', function()
-  local line = vim.api.nvim_get_current_line()
-  local col = vim.api.nvim_win_get_cursor(0)[2]
-  -- %w é ASCII-only; letras gregas (β γ ρ φ χ) entram via classe de bytes UTF-8 (\128-\255).
-  -- Long-bracket string ([[ ]]) não processa escape decimal — precisa ser string normal.
-  local prefix_start = line:sub(1, col):find('\\_[%w+%-=()\128-\255]*$')
-  if not prefix_start then return end
-
-  local word = line:sub(prefix_start + 2, col)
-  -- gsub('.', ...) itera por byte, não por caractere — quebraria multi-byte (gregas = 2
-  -- bytes UTF-8). vim.fn.split(word, '\zs') separa por caractere Unicode corretamente.
-  local chars = vim.fn.split(word, [[\zs]])
-  local converted = table.concat(vim.tbl_map(function(ch) return SUBSCRIPT_MAP[ch] or ch end, chars))
-
-  vim.api.nvim_set_current_line(line:sub(1, prefix_start - 1) .. converted .. line:sub(col + 1))
-  vim.api.nvim_win_set_cursor(0, { vim.api.nvim_win_get_cursor(0)[1], prefix_start - 1 + #converted })
-end, { buffer = true, desc = 'Converte \\_texto em subscrito Unicode' })
-
--- sobrescrito: \^texto<C-k> → ᵗᵉˣᵗᵒ (ex. deg⁺, deg⁻ — grau de saída/entrada de vértice).
+-- sobrescrito: \^texto<C-j> → ᵗᵉˣᵗᵒ (ex. deg⁺, deg⁻ — grau de saída/entrada de vértice).
 -- Cobertura Unicode de sobrescrito ainda é pior que a de subscrito: falta só 'q' no latino
 -- (nenhum bloco Unicode define essa forma) — 'r' existe (U+02B6, small capital inverted r)
 -- mas foi deixado de fora por não ser visualmente um 'r' reconhecível; maioria das gregas
@@ -125,16 +107,33 @@ for lower, glyph in pairs(vim.deepcopy(SUPERSCRIPT_MAP)) do
   if upper ~= lower then SUPERSCRIPT_MAP[upper] = glyph end
 end
 
-vim.keymap.set('i', '<C-k>', function()
+-- <C-j> unificado: detecta \_ (subscrito) ou \^ (sobrescrito) pelo prefixo antes do cursor.
+vim.keymap.set('i', '<C-j>', function()
   local line = vim.api.nvim_get_current_line()
   local col = vim.api.nvim_win_get_cursor(0)[2]
-  local prefix_start = line:sub(1, col):find([[\%^[%w+%-=()]*$]])
-  if not prefix_start then return end
+  local before = line:sub(1, col)
 
-  local word = line:sub(prefix_start + 2, col)
+  -- %w é ASCII-only; letras gregas (β γ ρ φ χ) entram via classe de bytes UTF-8 (\128-\255).
+  -- Long-bracket string ([[ ]]) não processa escape decimal — precisa ser string normal
+  -- pro padrão de subscrito (usa \128-\255); o de sobrescrito não precisa de bytes altos.
+  local sub_start = before:find('\\_[%w+%-=()\128-\255]*$')
+  local sup_start = before:find([[\%^[%w+%-=()]*$]])
+
+  local prefix_start, map, skip
+  if sub_start then
+    prefix_start, map, skip = sub_start, SUBSCRIPT_MAP, 2
+  elseif sup_start then
+    prefix_start, map, skip = sup_start, SUPERSCRIPT_MAP, 2
+  else
+    return
+  end
+
+  local word = line:sub(prefix_start + skip, col)
+  -- gsub('.', ...) itera por byte, não por caractere — quebraria multi-byte (gregas = 2
+  -- bytes UTF-8). vim.fn.split(word, '\zs') separa por caractere Unicode corretamente.
   local chars = vim.fn.split(word, [[\zs]])
-  local converted = table.concat(vim.tbl_map(function(ch) return SUPERSCRIPT_MAP[ch] or ch end, chars))
+  local converted = table.concat(vim.tbl_map(function(ch) return map[ch] or ch end, chars))
 
   vim.api.nvim_set_current_line(line:sub(1, prefix_start - 1) .. converted .. line:sub(col + 1))
   vim.api.nvim_win_set_cursor(0, { vim.api.nvim_win_get_cursor(0)[1], prefix_start - 1 + #converted })
-end, { buffer = true, desc = 'Converte \\^texto em sobrescrito Unicode' })
+end, { buffer = true, desc = 'Converte \\_texto (subscrito) ou \\^texto (sobrescrito) em Unicode' })
