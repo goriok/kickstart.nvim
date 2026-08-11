@@ -67,6 +67,14 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
   - `<M-]>` / `<M-[>`: Next / Previous suggestion
   - `<C-]>`: Dismiss suggestion
 
+### Discrete Math Notation (Markdown)
+
+- **Files**: `after/ftplugin/markdown.lua` (iabbrev), `lua/math_symbols/init.lua` (blink.cmp source)
+- **Description**: LaTeX-style triggers expand to Unicode math symbols while typing in markdown buffers — `\forall` → `∀`, `\subseteq` → `⊆`, etc. `iabbrev` expands on word boundary (space/punctuation); the blink.cmp source additionally suggests matches via popup while typing a partial trigger.
+- **Subscripts**: `\_` followed by letters/digits converts to Unicode subscript on demand — e.g. `A\_max` + trigger key → `Aₘₐₓ`. Covers Latin (`a e h i j k l m n o p r s t u v x`) and Greek (`β γ ρ φ χ`) lowercase letters — the only ones with a real Unicode subscript codepoint. Uppercase letters fold to their lowercase glyph (Unicode has no uppercase subscript in any block) — e.g. `A\_N` → `Aₙ`. Letters with no Unicode subscript at all (Latin `b c d f g q w y z`; Greek everything else) pass through unconverted.
+- **Keymaps**:
+  - `<C-j>` _(insert mode, markdown buffer)_: Convert `\_word` immediately before the cursor into Unicode subscript
+
 ### Code Outline & Symbol Navigation
 
 - **Plugin**: [aerial.nvim](https://github.com/stevearc/aerial.nvim)

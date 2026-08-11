@@ -59,3 +59,43 @@ iab([[\beta]], 'β')
 iab([[\gamma]], 'γ')
 iab([[\delta]], 'δ')
 iab([[\Delta]], 'Δ')
+
+-- subscrito de texto arbitrário: \_max<C-j> → ₘₐₓ (indexação tipo A_max, x_total).
+-- iabbrev não serve aqui: expande só em fronteira de palavra, e subscrito cola sem
+-- espaço no caractere base (A\_i, não "A \_i") — full-id abbreviation nunca dispararia.
+-- <Tab> também não serve de gatilho: blink.cmp já usa <Tab> pra navegar/aceitar o popup
+-- de completion, então essa tecla teria prioridade em conflito real de digitação.
+-- Unicode não tem subscrito pra b,c,d,f,g,q,w,y,z (latino) nem pra 19 das 24 gregas —
+-- só β γ ρ φ χ têm (confirmado via UCD); letras sem entrada passam sem conversão.
+-- Maiúscula subscrita não existe em NENHUM bloco Unicode (latino ou grego) — maiúsculas
+-- caem pra minúscula equivalente (A\_N → Aₙ, perde o caso); sem entrada no mapa, passa reta.
+local SUBSCRIPT_MAP = {
+  ['0'] = '₀', ['1'] = '₁', ['2'] = '₂', ['3'] = '₃', ['4'] = '₄',
+  ['5'] = '₅', ['6'] = '₆', ['7'] = '₇', ['8'] = '₈', ['9'] = '₉',
+  a = 'ₐ', e = 'ₑ', h = 'ₕ', i = 'ᵢ', j = 'ⱼ', k = 'ₖ', l = 'ₗ', m = 'ₘ',
+  n = 'ₙ', o = 'ₒ', p = 'ₚ', r = 'ᵣ', s = 'ₛ', t = 'ₜ', u = 'ᵤ', v = 'ᵥ', x = 'ₓ',
+  ['+'] = '₊', ['-'] = '₋', ['='] = '₌', ['('] = '₍', [')'] = '₎',
+  ['β'] = 'ᵦ', ['γ'] = 'ᵧ', ['ρ'] = 'ᵨ', ['φ'] = 'ᵩ', ['χ'] = 'ᵪ',
+}
+for lower, glyph in pairs(vim.deepcopy(SUBSCRIPT_MAP)) do
+  local upper = lower:upper()
+  if upper ~= lower then SUBSCRIPT_MAP[upper] = glyph end
+end
+
+vim.keymap.set('i', '<C-j>', function()
+  local line = vim.api.nvim_get_current_line()
+  local col = vim.api.nvim_win_get_cursor(0)[2]
+  -- %w é ASCII-only; letras gregas (β γ ρ φ χ) entram via classe de bytes UTF-8 (\128-\255).
+  -- Long-bracket string ([[ ]]) não processa escape decimal — precisa ser string normal.
+  local prefix_start = line:sub(1, col):find('\\_[%w+%-=()\128-\255]*$')
+  if not prefix_start then return end
+
+  local word = line:sub(prefix_start + 2, col)
+  -- gsub('.', ...) itera por byte, não por caractere — quebraria multi-byte (gregas = 2
+  -- bytes UTF-8). vim.fn.split(word, '\zs') separa por caractere Unicode corretamente.
+  local chars = vim.fn.split(word, [[\zs]])
+  local converted = table.concat(vim.tbl_map(function(ch) return SUBSCRIPT_MAP[ch] or ch end, chars))
+
+  vim.api.nvim_set_current_line(line:sub(1, prefix_start - 1) .. converted .. line:sub(col + 1))
+  vim.api.nvim_win_set_cursor(0, { vim.api.nvim_win_get_cursor(0)[1], prefix_start - 1 + #converted })
+end, { buffer = true, desc = 'Converte \\_texto em subscrito Unicode' })

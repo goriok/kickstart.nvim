@@ -74,6 +74,9 @@ local SYMBOLS = {
   { trigger = '\\Delta', symbol = 'Δ', desc = 'delta maiúsculo — variação' },
 }
 
+-- subscrito de texto arbitrário (\_max<Tab> → ₘₐₓ) não é gatilho fixo — não entra nesta
+-- tabela. Mecanismo dedicado em after/ftplugin/markdown.lua (insert-mode mapping).
+
 local source = {}
 
 function source.new()
