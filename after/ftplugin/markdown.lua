@@ -108,13 +108,16 @@ vim.keymap.set('i', '<C-j>', function()
 end, { buffer = true, desc = 'Converte \\_texto em subscrito Unicode' })
 
 -- sobrescrito: \^texto<C-k> → ᵗᵉˣᵗᵒ (ex. deg⁺, deg⁻ — grau de saída/entrada de vértice).
--- Cobertura Unicode de sobrescrito é pior que a de subscrito: faltam c,d,f,q,r (latino)
--- e a maioria das gregas; letras sem entrada no mapa passam sem conversão, como no subscrito.
+-- Cobertura Unicode de sobrescrito ainda é pior que a de subscrito: falta só 'q' no latino
+-- (nenhum bloco Unicode define essa forma) — 'r' existe (U+02B6, small capital inverted r)
+-- mas foi deixado de fora por não ser visualmente um 'r' reconhecível; maioria das gregas
+-- também falta. Letras sem entrada no mapa passam sem conversão, como no subscrito.
 local SUPERSCRIPT_MAP = {
   ['0'] = '⁰', ['1'] = '¹', ['2'] = '²', ['3'] = '³', ['4'] = '⁴',
   ['5'] = '⁵', ['6'] = '⁶', ['7'] = '⁷', ['8'] = '⁸', ['9'] = '⁹',
-  a = 'ᵃ', b = 'ᵇ', e = 'ᵉ', g = 'ᵍ', h = 'ʰ', i = 'ⁱ', j = 'ʲ', k = 'ᵏ', l = 'ˡ', m = 'ᵐ',
-  n = 'ⁿ', o = 'ᵒ', p = 'ᵖ', s = 'ˢ', t = 'ᵗ', u = 'ᵘ', v = 'ᵛ', w = 'ʷ', x = 'ˣ', y = 'ʸ', z = 'ᶻ',
+  a = 'ᵃ', b = 'ᵇ', c = 'ᶜ', d = 'ᵈ', e = 'ᵉ', f = 'ᶠ', g = 'ᵍ', h = 'ʰ', i = 'ⁱ', j = 'ʲ',
+  k = 'ᵏ', l = 'ˡ', m = 'ᵐ', n = 'ⁿ', o = 'ᵒ', p = 'ᵖ', s = 'ˢ', t = 'ᵗ', u = 'ᵘ', v = 'ᵛ',
+  w = 'ʷ', x = 'ˣ', y = 'ʸ', z = 'ᶻ',
   ['+'] = '⁺', ['-'] = '⁻', ['='] = '⁼', ['('] = '⁽', [')'] = '⁾',
 }
 for lower, glyph in pairs(vim.deepcopy(SUPERSCRIPT_MAP)) do
