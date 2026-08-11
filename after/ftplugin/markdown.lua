@@ -18,6 +18,12 @@ iab([[\emptyset]], '∅')
 iab([[\forall]], '∀')
 iab([[\exists]], '∃')
 iab([[\to]], '→')
+-- → também cobre arco de grafo (aresta direta u → v) — uso padrão na literatura,
+-- distinto de ⇒/⇔ (implicação/bicondicional metanível), resolvido por contexto.
+-- ↝ é alcançabilidade: existe caminho de u a v (zero ou mais arcos), não um arco direto.
+iab([[\arc]], '↝')
+-- adjacência não-direcionada (u ∼ v: ligados por aresta, sem direção) — Diestel, Graph Theory.
+iab([[\edge]], '∼')
 iab([[\iff]], '↔')
 iab([[\neg]], '¬')
 iab([[\land]], '∧')
