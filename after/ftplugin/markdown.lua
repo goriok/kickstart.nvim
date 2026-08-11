@@ -106,3 +106,32 @@ vim.keymap.set('i', '<C-j>', function()
   vim.api.nvim_set_current_line(line:sub(1, prefix_start - 1) .. converted .. line:sub(col + 1))
   vim.api.nvim_win_set_cursor(0, { vim.api.nvim_win_get_cursor(0)[1], prefix_start - 1 + #converted })
 end, { buffer = true, desc = 'Converte \\_texto em subscrito Unicode' })
+
+-- sobrescrito: \^texto<C-k> → ᵗᵉˣᵗᵒ (ex. deg⁺, deg⁻ — grau de saída/entrada de vértice).
+-- Cobertura Unicode de sobrescrito é pior que a de subscrito: faltam c,d,f,q,r (latino)
+-- e a maioria das gregas; letras sem entrada no mapa passam sem conversão, como no subscrito.
+local SUPERSCRIPT_MAP = {
+  ['0'] = '⁰', ['1'] = '¹', ['2'] = '²', ['3'] = '³', ['4'] = '⁴',
+  ['5'] = '⁵', ['6'] = '⁶', ['7'] = '⁷', ['8'] = '⁸', ['9'] = '⁹',
+  a = 'ᵃ', b = 'ᵇ', e = 'ᵉ', g = 'ᵍ', h = 'ʰ', i = 'ⁱ', j = 'ʲ', k = 'ᵏ', l = 'ˡ', m = 'ᵐ',
+  n = 'ⁿ', o = 'ᵒ', p = 'ᵖ', s = 'ˢ', t = 'ᵗ', u = 'ᵘ', v = 'ᵛ', w = 'ʷ', x = 'ˣ', y = 'ʸ', z = 'ᶻ',
+  ['+'] = '⁺', ['-'] = '⁻', ['='] = '⁼', ['('] = '⁽', [')'] = '⁾',
+}
+for lower, glyph in pairs(vim.deepcopy(SUPERSCRIPT_MAP)) do
+  local upper = lower:upper()
+  if upper ~= lower then SUPERSCRIPT_MAP[upper] = glyph end
+end
+
+vim.keymap.set('i', '<C-k>', function()
+  local line = vim.api.nvim_get_current_line()
+  local col = vim.api.nvim_win_get_cursor(0)[2]
+  local prefix_start = line:sub(1, col):find([[\%^[%w+%-=()]*$]])
+  if not prefix_start then return end
+
+  local word = line:sub(prefix_start + 2, col)
+  local chars = vim.fn.split(word, [[\zs]])
+  local converted = table.concat(vim.tbl_map(function(ch) return SUPERSCRIPT_MAP[ch] or ch end, chars))
+
+  vim.api.nvim_set_current_line(line:sub(1, prefix_start - 1) .. converted .. line:sub(col + 1))
+  vim.api.nvim_win_set_cursor(0, { vim.api.nvim_win_get_cursor(0)[1], prefix_start - 1 + #converted })
+end, { buffer = true, desc = 'Converte \\^texto em sobrescrito Unicode' })
