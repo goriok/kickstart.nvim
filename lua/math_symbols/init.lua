@@ -12,8 +12,18 @@
 local SYMBOLS = {
   { trigger = '\\in', symbol = '∈', desc = 'pertence' },
   { trigger = '\\notin', symbol = '∉', desc = 'não pertence' },
+  { trigger = '\\ni', symbol = '∋', desc = 'contém como membro (S ∋ x, inverso de x ∈ S)' },
+  { trigger = '\\nni', symbol = '∌', desc = 'não contém como membro' },
   { trigger = '\\subseteq', symbol = '⊆', desc = 'contido (ou igual)' },
   { trigger = '\\subset', symbol = '⊂', desc = 'contido estritamente' },
+  { trigger = '\\supseteq', symbol = '⊇', desc = 'contém (ou igual)' },
+  { trigger = '\\supset', symbol = '⊃', desc = 'contém estritamente' },
+  { trigger = '\\nsubseteq', symbol = '⊈', desc = 'não é subconjunto (nem igual)' },
+  { trigger = '\\nsupseteq', symbol = '⊉', desc = 'não é superconjunto (nem igual)' },
+  { trigger = '\\nsubset', symbol = '⊄', desc = 'não é subconjunto' },
+  { trigger = '\\nsupset', symbol = '⊅', desc = 'não é superconjunto' },
+  { trigger = '\\subsetneq', symbol = '⊊', desc = 'subconjunto estrito (com ≠)' },
+  { trigger = '\\supsetneq', symbol = '⊋', desc = 'superconjunto estrito (com ≠)' },
   { trigger = '\\cup', symbol = '∪', desc = 'união' },
   { trigger = '\\cap', symbol = '∩', desc = 'interseção' },
   { trigger = '\\setminus', symbol = '\\', desc = 'diferença de conjuntos' },
@@ -30,6 +40,9 @@ local SYMBOLS = {
   { trigger = '\\mid', symbol = '|', desc = 'tal que' },
   { trigger = '\\times', symbol = '×', desc = 'produto cartesiano' },
   { trigger = '\\sqsubseteq', symbol = '⊑', desc = 'ordem parcial genérica' },
+  { trigger = '\\sqsupseteq', symbol = '⊒', desc = 'ordem parcial genérica (inversa)' },
+  { trigger = '\\nsqsubseteq', symbol = '⋢', desc = 'não é ordem parcial genérica (⊑ negado)' },
+  { trigger = '\\nsqsupseteq', symbol = '⋣', desc = 'não é ordem parcial genérica inversa (⊒ negado)' },
   -- satisfaz / prova
   { trigger = '\\models', symbol = '⊨', desc = 'satisfaz (semântico)' },
   { trigger = '\\vdash', symbol = '⊢', desc = 'derivável / prova (sintático)' },
@@ -75,6 +88,19 @@ local SYMBOLS = {
   { trigger = '\\gamma', symbol = 'γ', desc = 'variável genérica' },
   { trigger = '\\delta', symbol = 'δ', desc = 'delta minúsculo — distância/diferença pequena' },
   { trigger = '\\Delta', symbol = 'Δ', desc = 'delta maiúsculo — variação' },
+  -- "?" sobre operador — relação a provar/conjecturada (só existem estes 3 precompostos em Unicode)
+  { trigger = '\\eqq', symbol = '≟', desc = 'igualdade a provar/conjecturada (? sobre =)' },
+  { trigger = '\\ltq', symbol = '⩻', desc = 'menor-que conjecturado (? sobre <)' },
+  { trigger = '\\gtq', symbol = '⩼', desc = 'maior-que conjecturado (? sobre >)' },
+  -- demais operadores conjecturais: sem forma precomposta em Unicode, convenção "<op> ?"
+  { trigger = '\\subseteqq', symbol = '⊆ ?', desc = 'contido (ou igual) conjecturado' },
+  { trigger = '\\subsetq', symbol = '⊂ ?', desc = 'contido estritamente conjecturado' },
+  { trigger = '\\equivq', symbol = '≡ ?', desc = 'equivalente conjecturado' },
+  { trigger = '\\leqq', symbol = '≤ ?', desc = 'menor ou igual conjecturado' },
+  { trigger = '\\geqq', symbol = '≥ ?', desc = 'maior ou igual conjecturado' },
+  { trigger = '\\sqsubseteqq', symbol = '⊑ ?', desc = 'ordem parcial genérica conjecturada' },
+  { trigger = '\\inq', symbol = '∈ ?', desc = 'pertença conjecturada' },
+  { trigger = '\\notinq', symbol = '∉ ?', desc = 'não-pertença conjecturada' },
 }
 
 -- subscrito de texto arbitrário (\_max<Tab> → ₘₐₓ) não é gatilho fixo — não entra nesta

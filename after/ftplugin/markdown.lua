@@ -9,8 +9,18 @@ local function iab(lhs, rhs) vim.cmd(string.format('iabbrev <buffer> %s %s', lhs
 
 iab([[\in]], '∈')
 iab([[\notin]], '∉')
+iab([[\ni]], '∋')
+iab([[\nni]], '∌')
 iab([[\subseteq]], '⊆')
 iab([[\subset]], '⊂')
+iab([[\supseteq]], '⊇')
+iab([[\supset]], '⊃')
+iab([[\nsubseteq]], '⊈')
+iab([[\nsupseteq]], '⊉')
+iab([[\nsubset]], '⊄')
+iab([[\nsupset]], '⊅')
+iab([[\subsetneq]], '⊊')
+iab([[\supsetneq]], '⊋')
 iab([[\cup]], '∪')
 iab([[\cap]], '∩')
 iab([[\setminus]], '<Bslash>')
@@ -31,6 +41,9 @@ iab([[\lor]], '∨')
 iab([[\mid]], '<Bar>')
 iab([[\times]], '×')
 iab([[\sqsubseteq]], '⊑')
+iab([[\sqsupseteq]], '⊒')
+iab([[\nsqsubseteq]], '⋢')
+iab([[\nsqsupseteq]], '⋣')
 iab([[\models]], '⊨')
 iab([[\vdash]], '⊢')
 iab([[\equiv]], '≡')
@@ -66,6 +79,23 @@ iab([[\beta]], 'β')
 iab([[\gamma]], 'γ')
 iab([[\delta]], 'δ')
 iab([[\Delta]], 'Δ')
+
+-- "?" sobre operador — relação a provar/conjecturada, não estabelecida. Unicode só
+-- precompõe estes três (sem combining overlay genérico pra "?" acima de outro glyph);
+-- \subseteq, \equiv etc. conjecturais não têm forma Unicode e ficam fora do escopo.
+iab([[\eqq]], '≟')
+iab([[\ltq]], '⩻')
+iab([[\gtq]], '⩼')
+
+-- demais operadores conjecturais: sem forma precomposta em Unicode, convenção "<op> ?".
+iab([[\subseteqq]], '⊆ ?')
+iab([[\subsetq]], '⊂ ?')
+iab([[\equivq]], '≡ ?')
+iab([[\leqq]], '≤ ?')
+iab([[\geqq]], '≥ ?')
+iab([[\sqsubseteqq]], '⊑ ?')
+iab([[\inq]], '∈ ?')
+iab([[\notinq]], '∉ ?')
 
 -- subscrito de texto arbitrário: \_max<C-j> → ₘₐₓ (indexação tipo A_max, x_total).
 -- iabbrev não serve aqui: expande só em fronteira de palavra, e subscrito cola sem
