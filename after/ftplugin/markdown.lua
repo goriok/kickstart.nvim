@@ -96,6 +96,7 @@ iab([[\geqq]], '≥ ?')
 iab([[\sqsubseteqq]], '⊑ ?')
 iab([[\inq]], '∈ ?')
 iab([[\notinq]], '∉ ?')
+iab([[\nsubsetq]], '⊄ ?')
 
 -- subscrito de texto arbitrário: \_max<C-j> → ₘₐₓ (indexação tipo A_max, x_total).
 -- iabbrev não serve aqui: expande só em fronteira de palavra, e subscrito cola sem

@@ -101,6 +101,7 @@ local SYMBOLS = {
   { trigger = '\\sqsubseteqq', symbol = '⊑ ?', desc = 'ordem parcial genérica conjecturada' },
   { trigger = '\\inq', symbol = '∈ ?', desc = 'pertença conjecturada' },
   { trigger = '\\notinq', symbol = '∉ ?', desc = 'não-pertença conjecturada' },
+  { trigger = '\\nsubsetq', symbol = '⊄ ?', desc = 'não é subconjunto, conjecturado' },
 }
 
 -- subscrito de texto arbitrário (\_max<Tab> → ₘₐₓ) não é gatilho fixo — não entra nesta
