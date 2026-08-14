@@ -912,6 +912,10 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
+
+      -- WinSeparator padrão do tema é quase invisível no fundo escuro;
+      -- LineNr já é um cinza-azulado sutil pensado para elementos de UI.
+      vim.api.nvim_set_hl(0, 'WinSeparator', { link = 'LineNr' })
     end,
   },
 
