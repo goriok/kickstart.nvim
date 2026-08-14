@@ -30,6 +30,10 @@ Two components implement a shared LaTeX-trigger → Unicode notation for discret
 
 **Conjectural relations ("? over an operator")**: Unicode only precomposes three such forms — `≟` (`\eqq`), `⩻` (`\ltq`), `⩼` (`\gtq`). No combining "question mark above" character exists, so it cannot be stacked over arbitrary operators (⊆, ≡, ≤, …) the way `≠` stacks a combining slash. For those, the convention is `<op> ?` as plain text (e.g. `\subseteqq` → `⊆ ?`), not a single Unicode glyph. Superscript `?` was considered and rejected — the superscript Unicode block has no question-mark form at all.
 
+There are two distinct uses of a trailing `?`, not to be confused:
+- **`<op> ?`** marks one specific relation as unproven *within* a larger derivation (e.g. a step in a proof) — the `?` binds to that operator only.
+- **`<sentence> ?`** (a bare `?` at the end of the whole line, not attached to any operator) marks the entire proposition as an open question — e.g. `(Scope, ⊑)?` asking whether `⊑` is actually a partial order, or `∀prop ∈ Identity₁ ∃s ∈ Scope: s ∈ scopes(prop) ?` asking whether the whole statement holds. No dedicated symbol or trigger for this — plain `?` typed normally at end of line.
+
 Symbol coverage follows real Unicode precomposed forms only — never invent/simulate a glyph that doesn't exist (check via `unicodedata` before adding).
 
 ## Language Support
