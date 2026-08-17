@@ -914,8 +914,10 @@ require('lazy').setup({
       vim.cmd.colorscheme 'tokyonight-night'
 
       -- WinSeparator padrão do tema é quase invisível no fundo escuro;
-      -- LineNr já é um cinza-azulado sutil pensado para elementos de UI.
-      vim.api.nvim_set_hl(0, 'WinSeparator', { link = 'LineNr' })
+      -- vermelho-claro do próprio tema (DiagnosticError) pra ficar bem
+      -- visível em apresentações/projetor.
+      local diagnostic_error = vim.api.nvim_get_hl(0, { name = 'DiagnosticError' })
+      vim.api.nvim_set_hl(0, 'WinSeparator', { fg = diagnostic_error.fg, bold = true })
     end,
   },
 
