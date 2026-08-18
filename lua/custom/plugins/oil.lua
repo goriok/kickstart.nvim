@@ -31,5 +31,9 @@ return {
 
     -- Atalho para abrir o Oil
     vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Abrir diretório pai (Oil)' })
+
+    -- Abrir o Oil em um novo split
+    vim.keymap.set('n', '<leader>-', '<CMD>vsplit | Oil<CR>', { desc = 'Abrir Oil em split vertical' })
+    vim.keymap.set('n', '<leader>\\', '<CMD>split | Oil<CR>', { desc = 'Abrir Oil em split horizontal' })
   end,
 }
