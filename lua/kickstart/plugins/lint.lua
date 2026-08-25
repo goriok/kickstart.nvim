@@ -5,8 +5,14 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       local lint = require 'lint'
+
+      -- Disable MD013 (line-length) globally: prose is written as one long
+      -- logical line per paragraph (no hard-wrap), so line-length is not a
+      -- real lint issue for this workflow.
+      lint.linters.markdownlint.args = { '--stdin', '--disable', 'MD013', '--' }
+
       lint.linters_by_ft = {
-        --markdown = { 'markdownlint' },
+        markdown = { 'markdownlint' },
         yaml = { 'yamllint' },
         json = { 'jsonlint' },
         ruby = { 'rubocop' },
