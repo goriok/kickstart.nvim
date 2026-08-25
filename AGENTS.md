@@ -17,7 +17,11 @@ Neovim configuration based on [kickstart.nvim](https://github.com/nvim-lua/kicks
 
 ## AI Tooling
 
-`codecompanion.nvim` uses the `claude_code` ACP adapter. MCP servers: Context7 (auto-start), Sequential Thinking, PDF Reader, Memory (on-demand via `/mcp` in chat).
+`claudecode.nvim` bridges to the Claude Code CLI via the same WebSocket MCP protocol as the official VS Code extension. `opencode.nvim` is a secondary, separate in-editor chat talking to a local `opencode` server. Neither uses codecompanion — that plugin and its adapter/prompt-library infrastructure were removed (`91ebb31`).
+
+## Claude Code Skills
+
+`.claude/skills/` holds this repo's skills; `lua/custom/skills_sync.lua` symlinks each into `~/.claude/skills/` on `VimEnter` so they're available outside this repo too.
 
 ## Discrete Math Notation
 
@@ -38,8 +42,18 @@ Symbol coverage follows real Unicode precomposed forms only — never invent/sim
 
 ## Language Support
 
-LSP, formatters, linters and Treesitter configured for Lua, Python, Go, Ruby, JS/TS, Markdown, YAML, JSON, CSS/HTML.
+LSP, formatters, linters and Treesitter configured for Lua, Python, Go, Ruby, JS/TS, Kotlin, Markdown, YAML, JSON, CSS/HTML.
 See `docs/LANGUAGE_SUPPORT.md` for the full table.
+
+Markdown linting (`markdownlint`) runs with `MD013` (line-length) disabled globally — see `.markdownlint.jsonc` and `lint.lua`. Prose in this repo (and in the user's global CLAUDE.md convention) is written as one logical line per paragraph, no hard-wrap, so line-length is not a real lint issue here.
+
+## Colorscheme
+
+Active: `gruvbox.nvim` (`init.lua`). Additional themes (catppuccin, dracula, everforest, kanagawa, nightfox, nord, tokyonight) are installed `lazy = true` for on-demand switching — do not remove them when changing the active colorscheme unless asked. `WinSeparator` is hardcoded to the theme's `DiagnosticError` red on `ColorScheme` — if you change colorscheme, verify this highlight still applies (or gruvbox's autocmd needs to be replicated for the new theme).
+
+## Window Focus Signaling
+
+Three plugins jointly signal the active split — `focus.nvim` (signcolumn), `vimade` (dims inactive windows' background and syntax highlighting, fadelevel 0.4), `colorful-winsep.nvim` (bright red animated border on active window edge). `vimade`'s blocklist preserves `SignColumn`, `WinSeparator`, `ColorfulWinSep*` so the three don't visually compete — if you touch any of the three plugin configs, keep that blocklist in sync or the signals will fight each other again (see `f9a2f23`).
 
 ## Guardrails
 

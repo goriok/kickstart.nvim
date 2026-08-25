@@ -5,7 +5,7 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 ## Features
 
 - **Package Manager**: [lazy.nvim](https://github.com/folke/lazy.nvim)
-- **Colorscheme**: [tokyonight.nvim](https://github.com/folke/tokyonight.nvim) (Night variant)
+- **Colorscheme**: [gruvbox.nvim](https://github.com/ellisonleao/gruvbox.nvim) — plus catppuccin, dracula, everforest, kanagawa, nightfox, nord and tokyonight installed lazy for on-demand switching (`:colorscheme <name>`)
 - **LSP**: Native LSP with [blink.cmp](https://github.com/saghen/blink.cmp) for autocompletion.
 - **Formatting**: [conform.nvim](https://github.com/stevearc/conform.nvim) for auto-formatting.
 - **Treesitter**: Syntax highlighting and parsing.
@@ -13,33 +13,6 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 - **Symbol Navigation**: [aerial.nvim](https://github.com/stevearc/aerial.nvim) for code outline and structure.
 
 ## Customizations
-
-### AI Integration
-
-- **Plugin**: [codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim)
-- **Default Adapter**: GitHub Copilot
-- **Available Adapters**: GitHub Copilot, Google Gemini, Claude Code
-- **Extensions**: Chat history (`codecompanion-history.nvim`) — open with `gh`, save with `gW` inside chat buffer.
-- **MCP Servers** (Model Context Protocol): External tool servers that extend the AI's capabilities via JSON-RPC over stdio. Toggle with `/mcp` in a chat buffer.
-  - **Context7** (`@upstash/context7-mcp`): Live, up-to-date library/framework documentation. No API key.
-  - **Sequential Thinking** (`@modelcontextprotocol/server-sequential-thinking`): Structured step-by-step reasoning with revision/branching. No API key.
-  - **PDF Reader** (`pdf-reader-mcp`): Extracts text and metadata from PDF files. No API key.
-- **MCP Auto-start**: Only Context7 starts automatically. Sequential Thinking, PDF Reader, and Memory are on-demand — toggle with `/mcp` in chat.
-- **Prompt Library**: Switchable AI profiles loaded from external files (`~/.local/share/nvim/prompts/`). Available via `<leader>aa`:
-  - **Sofi** (`sofi`) — Philosophy mentor (Práxis Filosófica)
-  - **Study** (`iam-study`) — OAuth2, OIDC, Federation tutor
-  - **Architect** (`iam-arch`) — IAM architecture & design advisor
-  - `Browse Chat History` (`history`) and `Browse Summaries` (`summaries`)
-- **Statusline Spinner**: A braille spinner animates in the statusline while a request is in flight; `fidget.nvim` shows toast notifications on start/done.
-- **Keymaps**:
-  - `<leader>ac`: Toggle AI Chat
-  - `<leader>ai`: AI Inline Edit (Visual mode)
-  - `<leader>aa`: AI Actions
-  - `<leader>as`: Open Sofi (Philosophy Mentor) chat
-  - `gzs` _(chat buffer)_: Create chat summary
-  - `gzb` _(chat buffer)_: Browse saved summaries
-- **Custom Commands**:
-  - `:CCTitle <new title>`: Rename the current chat (updates UI, history, and buffer name)
 
 ### Claude Code IDE Integration
 
@@ -58,14 +31,15 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
   - `:ClaudeCodeStatus` — check WebSocket server status
   - `:ClaudeCodeSelectModel` — select Claude model
 
-### Inline AI Suggestions
+### Opencode Chat
 
-- **Plugin**: [copilot.lua](https://github.com/zbirenbaum/copilot.lua)
-- **Description**: Inline code suggestions powered by GitHub Copilot, auto-triggered on insert mode.
+- **Plugin**: [opencode.nvim](https://github.com/NickvanDyke/opencode.nvim)
+- **Description**: Secondary in-editor AI chat, talking to a local `opencode` server (separate from the Claude Code terminal integration above).
 - **Keymaps**:
-  - `<C-l>`: Accept suggestion
-  - `<M-]>` / `<M-[>`: Next / Previous suggestion
-  - `<C-]>`: Dismiss suggestion
+  - `<leader>oo`: Toggle Opencode
+  - `<C-a>` _(normal/visual)_: Ask about the current context
+  - `<C-x>` _(normal/visual)_: Select action
+  - `go` / `goo`: Add to context (operator / current line)
 
 ### Discrete Math Notation (Markdown)
 
@@ -84,15 +58,32 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
   - `<leader>tS`: Toggle symbols for all buffers
   - Inside aerial: `Enter` to jump, `q` to close, `j/k` to navigate, `{/}` to jump between symbols
 
+### File Bookmarking
+
+- **Plugin**: [grapple.nvim](https://github.com/cbochs/grapple.nvim)
+- **Description**: Tag files for instant recall, scoped per git project.
+- **Keymaps**:
+  - `<leader>ha`: Tag current file (optional name prompt)
+  - `<leader>hh`: Toggle tags menu
+  - `<leader>1` / `<leader>2` / `<leader>3` / `<leader>4`: Jump to tagged file 1-4
+  - `<leader>hn` / `<leader>hp`: Cycle next/previous tagged file
+
 ### File Management
 
 - **Plugin**: [oil.nvim](https://github.com/stevearc/oil.nvim)
 - **Description**: Edit your filesystem like a normal buffer.
 - **Keymaps**:
   - `-`: Open parent directory
+  - `<leader>-`: Open Oil in a new vertical split
+  - `<leader>\`: Open Oil in a new horizontal split
   - `<C-x>`: Open in horizontal split
   - `<C-v>`: Open in vertical split
   - `<C-t>`: Open in new tab
+
+### Window Focus Signaling
+
+- **Plugins**: [focus.nvim](https://github.com/nvim-focus/focus.nvim), [vimade](https://github.com/TaDaa/vimade), [colorful-winsep.nvim](https://github.com/nvim-zh/colorful-winsep.nvim)
+- **Description**: Three plugins combine to make the active split unmistakable — `colorful-winsep.nvim` draws a bright red animated border on the active window's edge, `vimade` dims the background and syntax-highlighted text of every inactive window (fadelevel 0.4), and `focus.nvim` keeps the signcolumn signal. `WinSeparator` is also linked to the theme's `DiagnosticError` red so splits stay visible even without vimade's dimming. The three preserve each other's highlight groups (`SignColumn`, `WinSeparator`, `ColorfulWinSep*`) via `vimade`'s blocklist so they don't compete.
 
 ### Session Management
 
@@ -110,10 +101,40 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 - **Keymaps**:
   - `<leader>ww`: Toggle maximize current window
 
+### Terminal
+
+- **Plugin**: [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim)
+- **Description**: Multiple managed terminals (horizontal, float, vertical).
+- **Keymaps**:
+  - `<leader>tt`: Toggle terminal (horizontal)
+  - `<leader>tf`: Toggle terminal (float)
+  - `<leader>tv`: Toggle terminal (vertical)
+  - `<C-h/j/k/l>` _(terminal mode)_: Move focus between windows
+
+### Editing (mini.nvim)
+
+- **Plugin**: [mini.nvim](https://github.com/nvim-mini/mini.nvim)
+- **Description**: Collection of small, independent editing modules — text objects (`mini.ai`), surround manipulation (`mini.surround`), comments (`mini.comment`), cursor-word highlight (`mini.cursorword`), indent scope guides (`mini.indentscope`). Full module reference: `docs/MINI_PLUGINS.md`.
+
+### Statusline
+
+- **Plugin**: [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)
+- **Description**: Statusline (mode, branch, diff, diagnostics, filename, encoding, progress, location); theme adapts automatically to the active colorscheme. Also hosts the [nvim-token-counter](https://github.com/lancekrogers/nvim-token-counter) component, which shows an estimated Claude token count for the buffer.
+
+### TODO Comments
+
+- **Plugin**: [todo-comments.nvim](https://github.com/folke/todo-comments.nvim)
+- **Description**: Highlights and searches `TODO`/`FIX`/`HACK`/`WARN`/`PERF`/`NOTE`/`TEST` comments, with sign-column icons.
+- **Keymaps**:
+  - `]t` / `[t`: Jump to next/previous TODO comment
+  - `<leader>st`: Search all TODO comments (Telescope)
+  - `<leader>sT`: Search TODO/FIX/FIXME only
+  - `<leader>xt` / `<leader>xT`: Send TODOs to quickfix / location list
+
 ### Markdown
 
 - **Plugins**:
-  - [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) — Rich rendering inside Neovim (also renders CodeCompanion chat buffers).
+  - [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) — Rich rendering inside Neovim.
   - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) — Live preview in browser with Mermaid diagram support.
 - **Keymaps**:
   - `<leader>mr`: Toggle Markdown render (in-editor)
@@ -133,9 +154,7 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 | `<leader>f`   | Format buffer                           |
 | `<leader>ts`  | Toggle code outline (symbols sidebar)   |
 | `<leader>tS`  | Toggle code outline for all buffers     |
-| `<leader>as`  | Open Sofi (Philosophy Mentor)           |
 | `<leader>q`   | Open diagnostic Quickfix list           |
-| `<C-l>`       | Accept Copilot suggestion (Insert mode) |
 | `<leader>mr`  | Toggle Markdown render (in-editor)      |
 | `<leader>mp`  | Toggle Markdown preview (browser)       |
 | `<leader>cc`  | Toggle Claude Code terminal             |
@@ -145,6 +164,10 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 | `<leader>cs`  | Send selection to Claude (visual mode)  |
 | `<leader>ca`  | Accept Claude diff                      |
 | `<leader>cd`  | Deny Claude diff                        |
+| `<leader>oo`  | Toggle Opencode chat                    |
+| `<leader>ha`  | Grapple: tag current file               |
+| `<leader>hh`  | Grapple: toggle tags menu               |
+| `<leader>tt`  | Toggle terminal (horizontal)            |
 | `<leader>qs`  | Restore session for current directory   |
 | `<leader>ql`  | Restore last session                    |
 | `<leader>qd`  | Quit without saving session             |
@@ -158,9 +181,10 @@ Out of the box support (LSP, Formatting, Highlighting) for:
 - **Go**: `gopls` (with built-in staticcheck), `goimports`, `gofumpt`
 - **Ruby**: `ruby-lsp`, `rubocop`
 - **JavaScript/TypeScript**: `ts_ls`, `eslint-lsp`, `prettierd`
+- **Kotlin**: `kotlin-language-server`, `ktlint` (setup notes: `docs/neovim-kotlin-setup.md`)
 - **CSS/HTML**: `prettierd`
-- **Markdown**: `marksman`, `prettierd`, `markdownlint`
-- **YAML/JSON**: `yaml-language-server`, `prettierd`
+- **Markdown**: `marksman`, `prettierd`, `markdownlint` (MD013 line-length disabled — prose is written one logical line per paragraph, no hard-wrap)
+- **YAML/JSON**: `yaml-language-server` (auto Kubernetes schema for `*.yaml`, plus SchemaStore catalog), `prettierd`
 
 ## Installation
 
@@ -198,5 +222,5 @@ Out of the box support (LSP, Formatting, Highlighting) for:
 ## Structure
 
 - `init.lua`: Main configuration file.
-- `lua/custom/plugins/`: User-added plugins (CodeCompanion, Copilot, Markdown, Oil, Maximizer, Aerial, etc.).
+- `lua/custom/plugins/`: User-added plugins (Claude Code, Opencode, Markdown, Oil, Maximizer, Aerial, etc.).
 - `lua/kickstart/plugins/`: Core Kickstart plugins (Debug, Lint, Gitsigns, etc.).
