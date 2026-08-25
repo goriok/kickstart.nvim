@@ -1,6 +1,6 @@
 # Custom Neovim Kickstart Configuration
 
-This is a personalized Neovim configuration based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim). It serves as a modular and understandable starting point, enhanced with specific tools for AI assistance, file management, and window handling.
+This is a personalized Neovim configuration based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim). It serves as a modular and understandable starting point, enhanced with specific tools for file management and window handling. AI assistance (Claude Code) is used externally, outside the editor — not integrated as a plugin.
 
 ## Features
 
@@ -13,33 +13,6 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 - **Symbol Navigation**: [aerial.nvim](https://github.com/stevearc/aerial.nvim) for code outline and structure.
 
 ## Customizations
-
-### Claude Code IDE Integration
-
-- **Plugin**: [claudecode.nvim](https://github.com/coder/claudecode.nvim)
-- **Description**: Native Neovim IDE extension for Claude Code CLI. Implements the same WebSocket MCP protocol as the official VS Code extension — Claude sees your buffers, selections, and can propose diffs in real-time.
-- **Requirements**: `claude` CLI installed (`~/.local/bin/claude`)
-- **Keymaps**:
-  - `<leader>cc`: Toggle Claude Code terminal
-  - `<leader>cf`: Focus Claude terminal
-  - `<leader>cr`: Resume last Claude session
-  - `<leader>cb`: Add current buffer to Claude context
-  - `<leader>cs` _(visual)_: Send selection to Claude
-  - `<leader>ca`: Accept proposed diff
-  - `<leader>cd`: Deny proposed diff
-- **Commands**:
-  - `:ClaudeCodeStatus` — check WebSocket server status
-  - `:ClaudeCodeSelectModel` — select Claude model
-
-### Opencode Chat
-
-- **Plugin**: [opencode.nvim](https://github.com/NickvanDyke/opencode.nvim)
-- **Description**: Secondary in-editor AI chat, talking to a local `opencode` server (separate from the Claude Code terminal integration above).
-- **Keymaps**:
-  - `<leader>oo`: Toggle Opencode
-  - `<C-a>` _(normal/visual)_: Ask about the current context
-  - `<C-x>` _(normal/visual)_: Select action
-  - `go` / `goo`: Add to context (operator / current line)
 
 ### Discrete Math Notation (Markdown)
 
@@ -157,14 +130,6 @@ This is a personalized Neovim configuration based on [kickstart.nvim](https://gi
 | `<leader>q`   | Open diagnostic Quickfix list           |
 | `<leader>mr`  | Toggle Markdown render (in-editor)      |
 | `<leader>mp`  | Toggle Markdown preview (browser)       |
-| `<leader>cc`  | Toggle Claude Code terminal             |
-| `<leader>cf`  | Focus Claude Code terminal              |
-| `<leader>cr`  | Resume last Claude session              |
-| `<leader>cb`  | Add current buffer to Claude context    |
-| `<leader>cs`  | Send selection to Claude (visual mode)  |
-| `<leader>ca`  | Accept Claude diff                      |
-| `<leader>cd`  | Deny Claude diff                        |
-| `<leader>oo`  | Toggle Opencode chat                    |
 | `<leader>ha`  | Grapple: tag current file               |
 | `<leader>hh`  | Grapple: toggle tags menu               |
 | `<leader>tt`  | Toggle terminal (horizontal)            |
@@ -222,5 +187,5 @@ Out of the box support (LSP, Formatting, Highlighting) for:
 ## Structure
 
 - `init.lua`: Main configuration file.
-- `lua/custom/plugins/`: User-added plugins (Claude Code, Opencode, Markdown, Oil, Maximizer, Aerial, etc.).
+- `lua/custom/plugins/`: User-added plugins (Markdown, Oil, Maximizer, Aerial, etc.).
 - `lua/kickstart/plugins/`: Core Kickstart plugins (Debug, Lint, Gitsigns, etc.).

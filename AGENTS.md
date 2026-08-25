@@ -17,7 +17,7 @@ Neovim configuration based on [kickstart.nvim](https://github.com/nvim-lua/kicks
 
 ## AI Tooling
 
-`claudecode.nvim` bridges to the Claude Code CLI via the same WebSocket MCP protocol as the official VS Code extension. `opencode.nvim` is a secondary, separate in-editor chat talking to a local `opencode` server. Neither uses codecompanion — that plugin and its adapter/prompt-library infrastructure were removed (`91ebb31`).
+No in-editor AI chat/IDE plugin — Claude Code is used externally, outside Neovim. `codecompanion.nvim` and its adapter/prompt-library infrastructure were removed (`91ebb31`); `claudecode.nvim` and `opencode.nvim` were removed afterward for the same reason.
 
 ## Claude Code Skills
 
